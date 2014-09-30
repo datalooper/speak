@@ -8,11 +8,11 @@ c.compute_dimensions()}else a.S("[data-orbit]",a.scope).each(function(b,c){var d
 function populatePlayer(obj){
 
 	$.each( obj, function( key, song ) {
-		var songObj = new Song(song);	
-		player.songs.push(songObj);  
+		var songObj = new SpeakPlayer.Song(song);
+		SpeakPlayer.player.songs.push(songObj);
 	});
 	renderSongs();
-	
+
 }
 
 function sortByKey(array, key) {
@@ -24,7 +24,7 @@ function sortByKey(array, key) {
 
 function preparePlayerData(){
 	var data = {
-		action: 'prepare_player',
+		action: 'get_songs',
 		security : MyAjax.security,
 		whatever: 1234
 	};
@@ -40,14 +40,14 @@ function preparePlayerData(){
 /* Init */
 
 function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
-	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", player.isInitialized, libraryContainer.length);
-	if(player.isInitialized == "false" && libraryContainer.length > 0){
+	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", SpeakPlayer.player.isInitialized, libraryContainer.length);
+	if(SpeakPlayer.player.isInitialized == "false" && libraryContainer.length > 0){
 		console.log('init');
-		player.playerContainer = playerContainer;
-		player.playlistContainer = playlistContainer;
-		player.libraryContainer = libraryContainer;
+        SpeakPlayer.player.playerContainer = playerContainer;
+        SpeakPlayer.player.playlistContainer = playlistContainer;
+        SpeakPlayer.player.libraryContainer = libraryContainer;
 		defineSVG();
-		preparePlayerData();	
+		preparePlayerData();
 		renderPlayer();		//only want to call once
 		renderPlaylist();
 		initVisualizer();
@@ -57,17 +57,17 @@ function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
 
 function onNoInteraction(){
 	$('canvas.sketch').addClass('opaque');
-	player.libraryContainer.addClass('transparent');
-	
+	SpeakPlayer.player.libraryContainer.addClass('transparent');
+
 }
 function startInteractionTimer(){
-	
+
 	var interactionTimer = setTimeout(function(){onNoInteraction();}, 5000);
 
-	player.libraryContainer.hover(function(){
+	SpeakPlayer.player.libraryContainer.hover(function(){
 		$('canvas.sketch').removeClass('opaque');
 
-		player.libraryContainer.removeClass('transparent');
+		SpeakPlayer.player.libraryContainer.removeClass('transparent');
 		clearTimeout(interactionTimer);
 	},
 	function(){
@@ -140,9 +140,10 @@ function startSeeking(){
 		player.controls.seekBar.slider("value", value);
 
 	}, 100);
-};/** Define object models **/ 
+};/** Define object models **/
 
-var player = {
+var SpeakPlayer = SpeakPlayer || {};
+SpeakPlayer.player = {
 	playerContainer : $('#playerContainer'),
 	libraryContainer : $('#libraryContainer'),
 	playlistContainer : $('#playlistContainer'),
@@ -166,13 +167,13 @@ var player = {
 	songs : [],
 	playlist : [],
 	clearCurrentlyPlayingSong : function(){
-		player.audioElement.remove();
-		player.currentlyPlayingArtistEl.text('');
-		player.currentlyPlayingSongNameEl.text('');
+		SpeakPlayer.player.audioElement.remove();
+        SpeakPlayer.player.currentlyPlayingArtistEl.text('');
+        SpeakPlayer.player.currentlyPlayingSongNameEl.text('');
 	},
 	setCurrentlyPlayingSong : function(song){
-		player.currentlyPlayingArtistEl.text(song.artistName);
-		player.currentlyPlayingSongNameEl.text(song.songName);
+        SpeakPlayer.player.currentlyPlayingArtistEl.text(song.artistName);
+        SpeakPlayer.player.currentlyPlayingSongNameEl.text(song.songName);
 		song.isPlaying = true;
 		song.isLoaded = true;
 
@@ -196,7 +197,7 @@ var player = {
 }
 
 //defines song model
-function Song(obj) {
+SpeakPlayer.Song = function(obj) {
 	this.isFeatured = false;
 	this.isPlaying = false,
 	this.isLoaded = false,
@@ -205,7 +206,7 @@ function Song(obj) {
 	this.albumName = 'album',
 	this.songName = 'track',
 	this.songUrl = '',
-	this.release_date = '',
+	this.releaseDate = '',
 	this.albumArtUrl = '',
 	this.id = '-1',
 	this.genres = '',
@@ -249,66 +250,93 @@ function stopSong(){
 }
 ;/** Front-End Rendering **/
 
-
 function renderSongs(){
-	htmlHeader = "<div class='libraryHeader cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul id='library'>";
-	htmlFeature = "";
-	htmlSongs = "";
-	$.each( player.songs, function( key, song ) {
-		if(!song.isFeatured){
-		song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
-			htmlSongs += "<li id='" + song.id+"' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='songName'>"+song.songName+"</p><a class='artistName' href=''>"+song.artistName+"</a><p class='albumName'>"+song.albumName+"</p><p class='date'>"+song.release_date+"</p><p class='genre'>";
+    htmlHeader = "<div class='libraryHeader'>Search</div>";
+	htmlSongs = "<ul class='byAlbum'>";
+    albumArtArray = [];
+    htmlFeature = "";
 
-			$.each(song.genres, function(key, genre){
-				htmlSongs += "<span>"+genre["name"]+"</span>";
-			});
+    $.each( SpeakPlayer.player.songs, function( key, song ) {
 
-			htmlSongs+= "</p></div></li>"; 
-		} else{
-			htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>"+song.songName+" <span class='by'>by</span></p><a class='artistName' href=''>"+song.artistName+"</a><p class='tag'>Categorized as ";
-			$.each(song.genres, function(key, genre){
-				htmlFeature += "<a href='#' class='genre'>"+genre["name"]+"</a>";
-			});
-			htmlFeature += ", released on <a class='album' href='#'>"+song.albumName + "</a>, " + song.release_date+"</p><p class='trackInfo'>"+song.trackInfo+"</p></div></div>";
-		}
+        if(song.isFeatured){
+            htmlFeature = Handlebars.templates['featuredTrack.hbs'](song);
+        }
+
+        if($.inArray(song.artistName, albumArtArray) == -1){
+            htmlSongs += "<li id='" + song.id+"' class='song cf' ><div class='songImg'><img src='"+song.albumArtUrl+"'/></div>'";
+            htmlSongs+= "</li>";
+            albumArtArray.push(song.artistName);
+        }
+
+
 
 	});
 	htmlSongs += "</ul>";
-	player.libraryContainer.append(htmlFeature+htmlHeader+htmlSongs);
+	SpeakPlayer.player.libraryContainer.prepend(htmlFeature).append(htmlSongs);
 }
+
+
+//old style
+
+//function renderSongs(){
+//	htmlHeader = "<div class='libraryHeader cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul id='library'>";
+//	htmlFeature = "";
+//	htmlSongs = "";
+//	$.each( SpeakPlayer.player.songs, function( key, song ) {
+//		if(!song.isFeatured){
+//		song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
+//			htmlSongs += "<li id='" + song.id+"' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='songName'>"+song.songName+"</p><a class='artistName' href=''>"+song.artistName+"</a><p class='albumName'>"+song.albumName+"</p><p class='date'>"+song.releaseDate+"</p><p class='genre'>";
+//
+//			$.each(song.genres, function(key, genre){
+//				htmlSongs += "<span>"+genre["name"]+"</span>";
+//			});
+//
+//			htmlSongs+= "</p></div></li>";
+//		} else{
+//			htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>"+song.songName+" <span class='by'>by</span></p><a class='artistName' href=''>"+song.artistName+"</a><p class='tag'>Categorized as ";
+//			$.each(song.genres, function(key, genre){
+//				htmlFeature += "<a href='#' class='genre'>"+genre["name"]+"</a>";
+//			});
+//			htmlFeature += ", released on <a class='album' href='#'>"+song.albumName + "</a>, " + song.releaseDate+"</p><p class='trackInfo'>"+song.trackInfo+"</p></div></div>";
+//		}
+//
+//	});
+//	htmlSongs += "</ul>";
+//	SpeakPlayer.player.libraryContainer.append(htmlFeature+htmlHeader+htmlSongs);
+//}
 
 function renderPlaylist(){
 	var html = "<ul class='cf' id='playlistUl'></ul>";
-	player.playlistContainer.append(html);
+	SpeakPlayer.player.playlistContainer.append(html);
 	setupScrollSlider();
 }
 function renderPlayer(){	
 	var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a  href="#" class="playlist">'+playlistSVG+'</a><a href="#" class="volume">'+volumeSVG+'<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">'+prevSVG+'</a><a href="#" class="playPause">'+playSVG+'</a><a href="#" class="next">'+nextSVG+'</a></div></div>';
 
-	player.playerContainer.append(html);
-	player.isInitialized = true;
-	player.el = player.playerContainer.find('#player');
-	player.controls.el = player.playerContainer.find('#controls');
-	player.controls.playPause = player.playerContainer.find('.playPause');
-	player.controls.stop = player.playerContainer.find('.stop');
-	player.controls.next = player.playerContainer.find('.next');
-	player.controls.playlist = player.playerContainer.find('.playlist');
-	player.controls.volumeSlider = player.playerContainer.find('#volumeSlider').slider({
+	SpeakPlayer.player.playerContainer.append(html);
+	SpeakPlayer.player.isInitialized = true;
+	SpeakPlayer.player.el = SpeakPlayer.player.playerContainer.find('#player');
+	SpeakPlayer.player.controls.el = SpeakPlayer.player.playerContainer.find('#controls');
+	SpeakPlayer.player.controls.playPause = SpeakPlayer.player.playerContainer.find('.playPause');
+	SpeakPlayer.player.controls.stop = SpeakPlayer.player.playerContainer.find('.stop');
+	SpeakPlayer.player.controls.next = SpeakPlayer.player.playerContainer.find('.next');
+	SpeakPlayer.player.controls.playlist = SpeakPlayer.player.playerContainer.find('.playlist');
+	SpeakPlayer.player.controls.volumeSlider = SpeakPlayer.player.playerContainer.find('#volumeSlider').slider({
 		orientation: "vertical",
 		range: "min",
 		min: 0,
 		max: 100,
 		value: 60,
 	});
-	player.controls.seekBar = player.playerContainer.find('.seekBar').slider({
+	SpeakPlayer.player.controls.seekBar = SpeakPlayer.player.playerContainer.find('.seekBar').slider({
 		range: "min",
 		value: 0,
 		min: 1
 	});
-	player.controls.startTime = player.playerContainer.find('#startTime');
-	player.controls.endTime = player.playerContainer.find('#endTime');
-	player.currentlyPlayingArtistEl = player.playerContainer.find('.currentlyPlaying .artist');
-	player.currentlyPlayingSongNameEl = player.playerContainer.find('.currentlyPlaying .songName');
+	SpeakPlayer.player.controls.startTime = SpeakPlayer.player.playerContainer.find('#startTime');
+	SpeakPlayer.player.controls.endTime = SpeakPlayer.player.playerContainer.find('#endTime');
+	SpeakPlayer.player.currentlyPlayingArtistEl = SpeakPlayer.player.playerContainer.find('.currentlyPlaying .artist');
+	SpeakPlayer.player.currentlyPlayingSongNameEl = SpeakPlayer.player.playerContainer.find('.currentlyPlaying .songName');
 	setListeners();
 	setupSeekbar();
 	setupVolumeSlider();
@@ -317,7 +345,7 @@ function renderPlayer(){
 
 
 function setupVolumeSlider(){
-	var volumeSlider = player.controls.volumeSlider;
+	var volumeSlider = SpeakPlayer.player.controls.volumeSlider;
 	volumeSlider.on('slide', function(event, ui){
 		if(audio != null){
 			console.log(ui.value);
@@ -327,21 +355,21 @@ function setupVolumeSlider(){
 }
 //sets up listeners on seekbar. only needs to happen once since seekbars are single instance.
 function setupSeekbar(){
-	seekBar = player.controls.seekBar;
+	seekBar = SpeakPlayer.player.controls.seekBar;
 	//stops seeking when use begins drag
 	seekBar.on( "slidestart", function() {
 		clearInterval(audio_clock);	
 	});
 	seekBar.on( "slidechange", function( event, ui ) {
 		//track time change on seekbar
-		player.controls.startTime.html(secondsToTime(ui.value/10));
+		SpeakPlayer.player.controls.startTime.html(secondsToTime(ui.value/10));
 	} );
 	//resumes seeking when user ends drag
 	seekBar.on( "slidestop", function( event, ui ) {
 		
 		value = seekBar.slider("value");
-		player.audioElement.currentTime = value/10;
-		if(player.getCurrentlyPlayingSong().isPlaying){
+		SpeakPlayer.player.audioElement.currentTime = value/10;
+		if(SpeakPlayer.player.getCurrentlyPlayingSong().isPlaying){
 			audio_clock = startSeeking();
 		}
 	} );
@@ -358,7 +386,7 @@ function secondsToTime(raw){
 	return minutes+":"+seconds;
 }
 function setupScrollSlider(){
-	player.playlistContainer.mCustomScrollbar({
+	SpeakPlayer.player.playlistContainer.mCustomScrollbar({
 		axis:"x",
 		advanced:{
 			autoExpandHorizontalScroll:true
@@ -368,63 +396,66 @@ function setupScrollSlider(){
 
 function bindPlayer(){
 	
-	player.libraryContainer.on("mouseenter", "li .playOptions", function(event) {
+	SpeakPlayer.player.libraryContainer.on("mouseenter", "li .playOptions", function(event) {
 		$(this).transition({width: 'auto'}, 500, 'in-out');
 
 	});
-	player.libraryContainer.on("mouseleave", "li .playOptions", function(event) {
+	SpeakPlayer.player.libraryContainer.on("mouseleave", "li .playOptions", function(event) {
 		$(this).transition({width: '25'}, 500, 'in-out');
 
 	});
 	//click handler for song objects in library
-	player.libraryContainer.on( "click", "li .playNow" , function(event) {
+	SpeakPlayer.player.libraryContainer.on( "click", "li .playNow" , function(event) {
 		var el = $(this);
 
 		if(player != null){
-			song = player.getSong(el.closest('li').attr("id"));
+			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
 			song.addToPlaylist(PLAY_NOW);
 		}
 		return false;
 	});
 
-	player.libraryContainer.on( "click", "li .playNext" , function(event) {
+    SpeakPlayer.player.libraryContainer.on("click", "#search label", function(event){
+        SpeakPlayer.player.libraryContainer.find('#input').toggleClass('focus');
+    });
+	SpeakPlayer.player.libraryContainer.on( "click", "li .playNext" , function(event) {
 		var el = $(this);
 
 		if(player != null){
-			song = player.getSong(el.closest('li').attr("id"));
+			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
 			song.addToPlaylist(PLAY_NEXT);
 		}
 		return false;
 	});
 
-	player.libraryContainer.on( "click", "li .addToPlaylist" , function(event) {
+	SpeakPlayer.player.libraryContainer.on( "click", "li .addToPlaylist" , function(event) {
 		var el = $(this);
 
 		if(player != null){
-			song = player.getSong(el.closest('li').attr("id"));
+			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
 			song.addToPlaylist(ADD_TO_PLAYLIST);
 		}
 		return false;
 	});
 	//remove item click handler
-	player.playlistContainer.on( "click",".remove", function() {	
+	SpeakPlayer.player.playlistContainer.on( "click",".remove", function() {	
 		el = $(this).parent();
-		song = player.getSong(el.attr('id'));
+		song = SpeakPlayer.player.getSong(el.attr('id'));
 		song.removeFromPlaylist();
 		return false;
 	});
 
 	//play item click handler
-	player.playlistContainer.on( "click", ".playOverlay", function(e) {
+	SpeakPlayer.player.playlistContainer.on( "click", ".playOverlay", function(e) {
 		var el = $(this).closest('.song');
-		song = player.getSong(el.attr('id'));
+		song = SpeakPlayer.player.getSong(el.attr('id'));
 		if(!song.isLoaded){
 			changeSong(song);
 		} else if(el.hasClass('playing')){
-			player.audioElement.pause();
+			SpeakPlayer.player.audioElement.pause();
 			el.removeClass('playing');
 		} else{
-			player.audioElement.play();
+			SpeakPlayer.player.audioElement.play();
 			el.addClass('playing');
 		}
 		e.stopPropagation();
@@ -432,37 +463,37 @@ function bindPlayer(){
 	});
 
 	//pauses player
-	player.playerContainer.on("click",".playPause", function(){
+	SpeakPlayer.player.playerContainer.on("click",".playPause", function(){
 		var button = $(this);
 		if(button.hasClass('playing')){
 			$('.song.playing').removeClass('playing');
-			player.audioElement.pause();
+			SpeakPlayer.player.audioElement.pause();
 		} else{
-			$('#'+player.getCurrentlyPlayingSong().id).addClass('playing');
-			player.audioElement.play();
+			$('#'+SpeakPlayer.player.getCurrentlyPlayingSong().id).addClass('playing');
+			SpeakPlayer.player.audioElement.play();
 		}
 
 	});
 
-	player.playerContainer.on("click",".playlist", function(){
+	SpeakPlayer.player.playerContainer.on("click",".playlist", function(){
 		var wrap = $(".off-canvas-wrap");
-		if(player.playlistContainer.hasClass("active")){
+		if(SpeakPlayer.player.playlistContainer.hasClass("active")){
 			wrap.removeClass("playlistActive");
-			player.playlistContainer.removeClass("active");
+			SpeakPlayer.player.playlistContainer.removeClass("active");
 		} else{
-			player.playlistContainer.addClass("active");
+			SpeakPlayer.player.playlistContainer.addClass("active");
 			wrap.addClass("playlistActive");
 
 		}
 	});
 
 	//pauses player
-	player.playerContainer.on("click",".previous", function(){
+	SpeakPlayer.player.playerContainer.on("click",".previous", function(){
 		seekPreviousSong();
 	});
 
 	//pauses player
-	player.playerContainer.on("click",".next", function(){
+	SpeakPlayer.player.playerContainer.on("click",".next", function(){
 		seekNextSong();
 	});
 }
@@ -476,26 +507,26 @@ ADD_TO_PLAYLIST = 3;
 
 function addToPlaylist(song, playOrder){
 	//display playlist object on screen
-	player.playerContainer.show();
-	var playerUl = player.playlistContainer.find('ul');
+	SpeakPlayer.player.playerContainer.show();
+	var playerUl = SpeakPlayer.player.playlistContainer.find('ul');
 	var htmlPlaying = "<li id='"+song.id+"' class='playing current song'>";
 	var htmlNoPlay = "<li id='"+song.id+"' class='song'>";
 	var html = "<img src='"+song.albumArtUrl+"'/><div class='songInfo'><p class='songName'>"+ song.songName +
 	"</p><p class='artistName'>"+song.artistName+"</p></div><div class='playOverlay'><a href='#' class='play'>"+playSVG+"</a><a href='#' class='pause'>"+pauseSVG+"</a></div><a href='#' class='remove'></li>";
 
-	if(player.playlistContainer.find('#'+song.id).length > 0){
+	if(SpeakPlayer.player.playlistContainer.find('#'+song.id).length > 0){
 		return false;
-	} else if(jQuery.isEmptyObject(player.playlist) || playOrder == PLAY_NOW){
+	} else if(jQuery.isEmptyObject(SpeakPlayer.player.playlist) || playOrder == PLAY_NOW){
 		playerUl.prepend(htmlPlaying+html);
 		changeSong(song);
-		player.libraryContainer.addClass('playing');
+		SpeakPlayer.player.libraryContainer.addClass('playing');
 		playerUl.sortable().disableSelection();
 	}else if(playOrder == ADD_TO_PLAYLIST) {
 		playerUl.append(htmlNoPlay+html);
 	} else{
 		playerUl.find('.current').after(htmlNoPlay+html);
 	}
-	player.playlist.push(song);	
+	SpeakPlayer.player.playlist.push(song);	
 
 }
 
@@ -505,11 +536,11 @@ function addToPlaylist(song, playOrder){
 
 function setPlayPauseButton(isPlaying){
 	if(isPlaying){
-		player.controls.playPause.addClass('playing');
-		player.controls.playPause.html(pauseSVG);
+		SpeakPlayer.player.controls.playPause.addClass('playing');
+		SpeakPlayer.player.controls.playPause.html(pauseSVG);
 	} else{
-		player.controls.playPause.removeClass('playing');
-		player.controls.playPause.html(playSVG);
+		SpeakPlayer.player.controls.playPause.removeClass('playing');
+		SpeakPlayer.player.controls.playPause.html(playSVG);
 	}
 }
 
@@ -521,30 +552,30 @@ function setPlayPauseButton(isPlaying){
 function changeSong(song) {
 
 	//removes current playing song
-	if(player.audioElement){
-		player.audioElement.pause();
-		player.audioElement.remove();
+	if(SpeakPlayer.player.audioElement){
+		SpeakPlayer.player.audioElement.pause();
+		SpeakPlayer.player.audioElement.remove();
 	}
 	//instantiate new audio element
-	audio = player.audioElement = new Audio(song.songUrl);
+	audio = SpeakPlayer.player.audioElement = new Audio(song.songUrl);
 	audio.addEventListener("loadedmetadata", function(_event) {
 		var duration = audio.duration;
 		initAnalyzer(audio);
-		player.controls.endTime.html(secondsToTime(duration));
+		SpeakPlayer.player.controls.endTime.html(secondsToTime(duration));
 			    //TODO whatever
 			});
 	//resets playing flag on previously playing song in playlist array.
-	if(player.getCurrentlyPlayingSong()){
-		player.getCurrentlyPlayingSong().isPlaying = false;
-		player.getCurrentlyPlayingSong().isLoaded = false;
+	if(SpeakPlayer.player.getCurrentlyPlayingSong()){
+		SpeakPlayer.player.getCurrentlyPlayingSong().isPlaying = false;
+		SpeakPlayer.player.getCurrentlyPlayingSong().isLoaded = false;
 	}
 	//adds playing class to library and playlist items
 	$('.song').removeClass('playing current');
 	$('.song#' + song.id).each(function(){
 		$(this).addClass('playing current');
 	});
-	player.setCurrentlyPlayingSong(song);
-	player.isPlaying = true;
+	SpeakPlayer.player.setCurrentlyPlayingSong(song);
+	SpeakPlayer.player.isPlaying = true;
 	/****************/
     audio.volume = 1.0;		//remove soon
     audio.pause();
@@ -560,15 +591,15 @@ function changeSong(song) {
 function getPreviousSong(){
 	var endingSong = endSong();
 	if(endingSong){
-		prevSongId = player.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
-		return player.getSong(prevSongId)
+		prevSongId = SpeakPlayer.player.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
+		return SpeakPlayer.player.getSong(prevSongId)
 	} else{
 		return false;
 	}
 }
 
 function endSong(){
-	endingSong = player.getCurrentlyPlayingSong();
+	endingSong = SpeakPlayer.player.getCurrentlyPlayingSong();
 	if(typeof(endingSong) !== "undefined"){
 		return endingSong;
 	} else{
@@ -580,8 +611,8 @@ function endSong(){
 function getNextSong(){
 	var endingSong = endSong();
 	if(endingSong){
-		nextSongId = player.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
-		return player.getSong(nextSongId);
+		nextSongId = SpeakPlayer.player.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
+		return SpeakPlayer.player.getSong(nextSongId);
 	} else{
 		return false;
 	}
@@ -590,21 +621,41 @@ function getNextSong(){
 function seekNextSong(){
 	var nextSong = getNextSong();
 	if(nextSong){		
-		player.clearCurrentlyPlayingSong();
+		SpeakPlayer.player.clearCurrentlyPlayingSong();
 		changeSong(nextSong);
 	}
 }
 function seekPreviousSong(){
 	var prevSong = getPreviousSong();
 	if(prevSong){
-		player.clearCurrentlyPlayingSong();
+		SpeakPlayer.player.clearCurrentlyPlayingSong();
 		changeSong(prevSong);
 	}
 }
 
 
 
-;
+;(function() {
+  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
+templates['featuredTrack.hbs'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
+  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, lambda=this.lambda;
+  return "<div class='featured-song cf'>\n    <div class='songImg'><img src=\""
+    + escapeExpression(((helper = (helper = helpers.albumArtUrl || (depth0 != null ? depth0.albumArtUrl : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"albumArtUrl","hash":{},"data":data}) : helper)))
+    + "\"/></div>\n    <div class='songInfo'><p class='status'>Featured</p>\n        <p class='songName'>"
+    + escapeExpression(((helper = (helper = helpers.songName || (depth0 != null ? depth0.songName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"songName","hash":{},"data":data}) : helper)))
+    + " <span class='by'>by</span></p><a class='artistName' href=''>"
+    + escapeExpression(((helper = (helper = helpers.artistName || (depth0 != null ? depth0.artistName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"artistName","hash":{},"data":data}) : helper)))
+    + "</a>\n        <p class='tag'>Categorized as\n            <a href='#' class='genre'>"
+    + escapeExpression(((helper = (helper = helpers.genre || (depth0 != null ? depth0.genre : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"genre","hash":{},"data":data}) : helper)))
+    + "</a> released on <a class='album' href='#'>"
+    + escapeExpression(((helper = (helper = helpers.albumName || (depth0 != null ? depth0.albumName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"albumName","hash":{},"data":data}) : helper)))
+    + "</a>\n            "
+    + escapeExpression(lambda(((stack1 = (depth0 != null ? depth0.song : depth0)) != null ? stack1.releaseDate : stack1), depth0))
+    + "</p>\n        <p class='trackInfo'>"
+    + escapeExpression(((helper = (helper = helpers.trackInfo || (depth0 != null ? depth0.trackInfo : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"trackInfo","hash":{},"data":data}) : helper)))
+    + "</p></div>\n</div>\n";
+},"useData":true});
+})();;
 /*
 
   Music is by The XX

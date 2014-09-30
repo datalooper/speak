@@ -3,11 +3,11 @@
 function populatePlayer(obj){
 
 	$.each( obj, function( key, song ) {
-		var songObj = new Song(song);	
-		player.songs.push(songObj);  
+		var songObj = new SpeakPlayer.Song(song);
+		SpeakPlayer.player.songs.push(songObj);
 	});
 	renderSongs();
-	
+
 }
 
 function sortByKey(array, key) {
@@ -19,7 +19,7 @@ function sortByKey(array, key) {
 
 function preparePlayerData(){
 	var data = {
-		action: 'prepare_player',
+		action: 'get_songs',
 		security : MyAjax.security,
 		whatever: 1234
 	};
@@ -35,14 +35,14 @@ function preparePlayerData(){
 /* Init */
 
 function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
-	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", player.isInitialized, libraryContainer.length);
-	if(player.isInitialized == "false" && libraryContainer.length > 0){
+	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", SpeakPlayer.player.isInitialized, libraryContainer.length);
+	if(SpeakPlayer.player.isInitialized == "false" && libraryContainer.length > 0){
 		console.log('init');
-		player.playerContainer = playerContainer;
-		player.playlistContainer = playlistContainer;
-		player.libraryContainer = libraryContainer;
+        SpeakPlayer.player.playerContainer = playerContainer;
+        SpeakPlayer.player.playlistContainer = playlistContainer;
+        SpeakPlayer.player.libraryContainer = libraryContainer;
 		defineSVG();
-		preparePlayerData();	
+		preparePlayerData();
 		renderPlayer();		//only want to call once
 		renderPlaylist();
 		initVisualizer();
@@ -52,17 +52,17 @@ function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
 
 function onNoInteraction(){
 	$('canvas.sketch').addClass('opaque');
-	player.libraryContainer.addClass('transparent');
-	
+	SpeakPlayer.player.libraryContainer.addClass('transparent');
+
 }
 function startInteractionTimer(){
-	
+
 	var interactionTimer = setTimeout(function(){onNoInteraction();}, 5000);
 
-	player.libraryContainer.hover(function(){
+	SpeakPlayer.player.libraryContainer.hover(function(){
 		$('canvas.sketch').removeClass('opaque');
 
-		player.libraryContainer.removeClass('transparent');
+		SpeakPlayer.player.libraryContainer.removeClass('transparent');
 		clearTimeout(interactionTimer);
 	},
 	function(){

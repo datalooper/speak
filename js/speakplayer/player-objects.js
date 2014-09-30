@@ -1,6 +1,7 @@
-/** Define object models **/ 
+/** Define object models **/
 
-var player = {
+var SpeakPlayer = SpeakPlayer || {};
+SpeakPlayer.player = {
 	playerContainer : $('#playerContainer'),
 	libraryContainer : $('#libraryContainer'),
 	playlistContainer : $('#playlistContainer'),
@@ -24,13 +25,13 @@ var player = {
 	songs : [],
 	playlist : [],
 	clearCurrentlyPlayingSong : function(){
-		player.audioElement.remove();
-		player.currentlyPlayingArtistEl.text('');
-		player.currentlyPlayingSongNameEl.text('');
+		SpeakPlayer.player.audioElement.remove();
+        SpeakPlayer.player.currentlyPlayingArtistEl.text('');
+        SpeakPlayer.player.currentlyPlayingSongNameEl.text('');
 	},
 	setCurrentlyPlayingSong : function(song){
-		player.currentlyPlayingArtistEl.text(song.artistName);
-		player.currentlyPlayingSongNameEl.text(song.songName);
+        SpeakPlayer.player.currentlyPlayingArtistEl.text(song.artistName);
+        SpeakPlayer.player.currentlyPlayingSongNameEl.text(song.songName);
 		song.isPlaying = true;
 		song.isLoaded = true;
 
@@ -54,7 +55,7 @@ var player = {
 }
 
 //defines song model
-function Song(obj) {
+SpeakPlayer.Song = function(obj) {
 	this.isFeatured = false;
 	this.isPlaying = false,
 	this.isLoaded = false,
@@ -63,7 +64,7 @@ function Song(obj) {
 	this.albumName = 'album',
 	this.songName = 'track',
 	this.songUrl = '',
-	this.release_date = '',
+	this.releaseDate = '',
 	this.albumArtUrl = '',
 	this.id = '-1',
 	this.genres = '',
