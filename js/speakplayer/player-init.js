@@ -34,19 +34,24 @@ function preparePlayerData(){
 
 /* Init */
 
-function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
+SpeakPlayer.renderLibrary = function () {
+
+};
+
+SpeakPlayer.initSpeakPlayer = function(libraryContainer, playerContainer, playlistContainer){
 	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", SpeakPlayer.player.isInitialized, libraryContainer.length);
 	if(SpeakPlayer.player.isInitialized == "false" && libraryContainer.length > 0){
 		console.log('init');
         SpeakPlayer.player.playerContainer = playerContainer;
         SpeakPlayer.player.playlistContainer = playlistContainer;
         SpeakPlayer.player.libraryContainer = libraryContainer;
-		defineSVG();
-		preparePlayerData();
-		renderPlayer();		//only want to call once
-		renderPlaylist();
-		initVisualizer();
-		startInteractionTimer();
+		this.defineSVG();
+        this.renderLibrary();
+        this.preparePlayerData();
+		this.renderPlayer();		//only want to call once
+		this.renderPlaylist();
+		this.initVisualizer();
+		//this.startInteractionTimer();
 	}
 }
 
