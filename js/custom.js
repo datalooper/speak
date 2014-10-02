@@ -19,6 +19,10 @@ body.on('click', '.top-bar-menu a', function () {
 
 });
 
+body.on('click','a[href="#"]', function(e){
+    e.preventDefault();
+    return false;
+});
 $(document).ready(function () {
     screenWindow = $(window);
     homeTopBarContainer = $('.homeNavWrap');

@@ -22,7 +22,7 @@ SpeakPlayer.Playlist = {
                 SpeakPlayer.Player.changeSong(nextSong);
             }
         }
-        $('#' + song.id).remove();
+        $('.' + song.id).remove();
 
         this.playlist = jQuery.grep(SpeakPlayer.Player.playlist, function (value) {
             return value != song;
@@ -37,14 +37,14 @@ SpeakPlayer.Playlist = {
         var html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
             "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + playSVG + "</a><a href='#' class='pause'>" + pauseSVG + "</a></div><a href='#' class='remove'></li>";
 
-        if (this.playlistContainer.find('#' + song.id).length > 0) {
+        if (this.playlistContainer.find('.' + song.id).length > 0) {
             return false;
-        } else if (jQuery.isEmptyObject(SpeakPlayer.Player.playlist) || playOrder == PLAY_NOW) {
+        } else if (jQuery.isEmptyObject(SpeakPlayer.Playlist.playlist) || playOrder == SpeakPlayer.Player.PLAY_NOW) {
             playerUl.prepend(htmlPlaying + html);
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
             playerUl.sortable().disableSelection();
-        } else if (playOrder == ADD_TO_PLAYLIST) {
+        } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {
             playerUl.append(htmlNoPlay + html);
         } else {
             playerUl.find('.current').after(htmlNoPlay + html);

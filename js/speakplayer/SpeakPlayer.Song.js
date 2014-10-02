@@ -3,28 +3,21 @@
  */
 //defines song model
 
-var Song = function(){};
+SpeakPlayer.Song = function(obj) {
+    this.isFeatured = false;
+    this.isPlaying = false,
+        this.isLoaded = false,
+        this.trackInfo = '',
+        this.artistName = 'artist',
+        this.albumName = 'album',
+        this.songName = 'track',
+        this.songUrl = '',
+        this.releaseDate = '',
+        this.albumArtUrl = '',
+        this.id = '-1',
+        this.genre = ''
 
-Song.prototype = {
-    isFeatured : false,
-    isPlaying : false,
-        isLoaded : false,
-        trackInfo : '',
-        artistName : 'artist',
-        albumName : 'album',
-        songName : 'track',
-        songUrl : '',
-        releaseDate : '',
-        albumArtUrl : '',
-        id : '-1',
-        genres : '',
 
-    create : function(obj) {
-        // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
-        var song = new Song();
-        for (var prop in obj) song[prop] = obj[prop];
-        return song;
-    }
+    // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
+    for (var prop in obj) this[prop] = obj[prop];
 }
-
-Song = new Song();

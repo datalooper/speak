@@ -1,5 +1,7 @@
 /**
  * Created by vcimo5 on 9/30/14.
+ * This is the meat of the player, housing the controls.
+ * Set up as a singleton, as there should only be one instance of the player.
  */
 SpeakPlayer.Player = {
     playerContainer: $('#playerContainer'),
@@ -36,12 +38,14 @@ SpeakPlayer.Player = {
         this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
         this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
 
-        SpeakPlayer.Seekbar.init();
-        SpeakPlayer.Volumeslider.init();
 
         this.initControls();
         this.setListeners();
         this.bindPlayer();
+
+        SpeakPlayer.Seekbar.init();
+        SpeakPlayer.Volumeslider.init();
+
 
     },
     /* Sets Up Player Controls */
@@ -70,21 +74,13 @@ SpeakPlayer.Player = {
 
     bindPlayer: function () {
 
-        SpeakPlayer.Library.libraryContainer.on("mouseenter", "li .playOptions", function (event) {
-            $(this).transition({width: 'auto'}, 500, 'in-out');
-
-        });
-        SpeakPlayer.Library.libraryContainer.on("mouseleave", "li .playOptions", function (event) {
-            $(this).transition({width: '25'}, 500, 'in-out');
-
-        });
         //click handler for song objects in library
         SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NOW);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NOW);
             }
             return false;
         });
@@ -96,8 +92,8 @@ SpeakPlayer.Player = {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NEXT);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NEXT);
             }
             return false;
         });
@@ -106,23 +102,23 @@ SpeakPlayer.Player = {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.ADD_TO_PLAYLIST);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.ADD_TO_PLAYLIST);
             }
             return false;
         });
         //remove item click handler
         SpeakPlayer.Playlist.playlistContainer.on("click", ".remove", function () {
             el = $(this).parent();
-            song = SpeakPlayer.Player.getSong(el.attr('id'));
-            SpeakPlayer.Playlist.removeFromPlaylist();
+            var song = SpeakPlayer.Player.getSong(el.attr('id'));
+            SpeakPlayer.Playlist.removeFromPlaylist(song);
             return false;
         });
 
         //play item click handler
         SpeakPlayer.Playlist.playlistContainer.on("click", ".playOverlay", function (e) {
             var el = $(this).closest('.song');
-            song = SpeakPlayer.Player.getSong(el.attr('id'));
+            song = SpeakPlayer.Player.getSong(el.data('song-id'));
             if (!song.isLoaded) {
                 SpeakPlayer.Player.changeSong(song);
             } else if (el.hasClass('playing')) {
@@ -269,7 +265,7 @@ SpeakPlayer.Player = {
     getPreviousSong: function () {
         var endingSong = this.endSong();
         if (endingSong) {
-            prevSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
+            prevSongId = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + endingSong.id + ']').prev('li').data('song-id');
             return this.getSong(prevSongId)
         } else {
             return false;
@@ -289,7 +285,7 @@ SpeakPlayer.Player = {
     getNextSong: function () {
         var endingSong = this.endSong();
         if (endingSong) {
-            nextSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
+            nextSongId = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + endingSong.id + ']').next('li').data('song-id');
             return this.getSong(nextSongId);
         } else {
             return false;
@@ -332,9 +328,10 @@ SpeakPlayer.Player = {
         }
         //adds playing class to library and playlist items
         $('.song').removeClass('playing current');
-        $('.song#' + song.id).each(function () {
+        $('.song[data-song-id=' + song.id + ']').each(function () {
             $(this).addClass('playing current');
         });
+        SpeakPlayer.Library.renderFeature(song);
         SpeakPlayer.Player.setCurrentlyPlayingSong(song);
         SpeakPlayer.Player.isPlaying = true;
         /****************/

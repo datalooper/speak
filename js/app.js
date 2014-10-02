@@ -46,31 +46,24 @@ SpeakPlayer = {
  */
 //defines song model
 
-var Song = function(){};
+SpeakPlayer.Song = function(obj) {
+    this.isFeatured = false;
+    this.isPlaying = false,
+        this.isLoaded = false,
+        this.trackInfo = '',
+        this.artistName = 'artist',
+        this.albumName = 'album',
+        this.songName = 'track',
+        this.songUrl = '',
+        this.releaseDate = '',
+        this.albumArtUrl = '',
+        this.id = '-1',
+        this.genre = ''
 
-Song.prototype = {
-    isFeatured : false,
-    isPlaying : false,
-        isLoaded : false,
-        trackInfo : '',
-        artistName : 'artist',
-        albumName : 'album',
-        songName : 'track',
-        songUrl : '',
-        releaseDate : '',
-        albumArtUrl : '',
-        id : '-1',
-        genres : '',
 
-    create : function(obj) {
-        // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
-        var song = new Song();
-        for (var prop in obj) song[prop] = obj[prop];
-        return song;
-    }
-}
-
-Song = new Song();;/**
+    // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
+    for (var prop in obj) this[prop] = obj[prop];
+};/**
  * Created by vcimo5 on 9/30/14.
  */
 SpeakPlayer.Seekbar = {
@@ -118,8 +111,10 @@ SpeakPlayer.Seekbar = {
  */
 SpeakPlayer.Library = {
     libraryContainer : "",
+    feature : "",
     render: function (libraryContainer) {
         this.libraryContainer = libraryContainer;
+        this.feature = libraryContainer.find('#featured');
         this.preparePlayerData();
     },
 
@@ -140,38 +135,44 @@ SpeakPlayer.Library = {
     populatePlayer: function (obj) {
 
         $.each(obj, function (key, song) {
-            var songObj = Song.create(song);
+            var songObj = new SpeakPlayer.Song(song);
+            if(songObj.isFeatured){
+                SpeakPlayer.Library.renderFeature(songObj);
+            }
             SpeakPlayer.Player.songs.push(songObj);
         });
         this.renderSongs();
     },
-
-    renderSongs: function () {
-        htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
-        htmlFeature = "";
-        htmlSongs = "";
-        $.each(SpeakPlayer.Player.songs, function (key, song) {
-            if (!song.isFeatured) {
-                song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
-                htmlSongs += "<li id='" + song.id + "' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='songName'>" + song.songName + "</p><a class='artistName' href=''>" + song.artistName + "</a><p class='albumName'>" + song.albumName + "</p><p class='date'>" + song.releaseDate + "</p><p class='genre'>";
-
-                $.each(song.genres, function (key, genre) {
-                    htmlSongs += "<span>" + genre["name"] + "</span>";
-                });
-
-                htmlSongs += "</p></div></li>";
-            } else {
-                htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>" + song.songName + " <span class='by'>by</span></p><a class='artistName' href=''>" + song.artistName + "</a><p class='tag'>Categorized as ";
-                $.each(song.genres, function (key, genre) {
-                    htmlFeature += "<a href='#' class='genre'>" + genre["name"] + "</a>";
-                });
-                htmlFeature += ", released on <a class='album' href='#'>" + song.albumName + "</a>, " + song.releaseDate + "</p><p class='trackInfo'>" + song.trackInfo + "</p></div></div>";
-            }
-
-        });
-        htmlSongs += "</ul>";
-        this.libraryContainer.prepend(htmlFeature).append(htmlHeader + htmlSongs);
-    }
+    renderFeature : function(song){
+        var htmlFeature = Handlebars.templates['featuredTrack.hbs'](song);
+        SpeakPlayer.Library.feature.html(htmlFeature);
+    },
+    //renderSongs: function () {
+    //    htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
+    //    htmlFeature = "";
+    //    htmlSongs = "";
+    //    $.each(SpeakPlayer.Player.songs, function (key, song) {
+    //        if (!song.isFeatured) {
+    //            song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
+    //            htmlSongs += "<li id='" + song.id + "' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='songName'>" + song.songName + "</p><a class='artistName' href=''>" + song.artistName + "</a><p class='albumName'>" + song.albumName + "</p><p class='date'>" + song.releaseDate + "</p><p class='genre'>";
+    //
+    //            $.each(song.genres, function (key, genre) {
+    //                htmlSongs += "<span>" + genre["name"] + "</span>";
+    //            });
+    //
+    //            htmlSongs += "</p></div></li>";
+    //        } else {
+    //            htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>" + song.songName + " <span class='by'>by</span></p><a class='artistName' href=''>" + song.artistName + "</a><p class='tag'>Categorized as ";
+    //            $.each(song.genres, function (key, genre) {
+    //                htmlFeature += "<a href='#' class='genre'>" + genre["name"] + "</a>";
+    //            });
+    //            htmlFeature += ", released on <a class='album' href='#'>" + song.albumName + "</a>, " + song.releaseDate + "</p><p class='trackInfo'>" + song.trackInfo + "</p></div></div>";
+    //        }
+    //
+    //    });
+    //    htmlSongs += "</ul>";
+    //    this.libraryContainer.prepend(htmlFeature).append(htmlHeader + htmlSongs);
+    //}
     //function renderSongs(){
 //    htmlHeader = "<div class='libraryHeader'>Search</div>";
 //	htmlSongs = "<ul class='byAlbum'>";
@@ -196,6 +197,16 @@ SpeakPlayer.Library = {
 //	htmlSongs += "</ul>";
 //	SpeakPlayer.player.libraryContainer.prepend(htmlFeature).append(htmlSongs);
 //}
+
+    renderSongs : function(){
+
+        var htmlSongs = Handlebars.templates['viewBySong.hbs'](SpeakPlayer.Player.songs);
+        SpeakPlayer.Library.libraryContainer.append(htmlSongs);
+        var options = {
+            valueNames: [ 'songName','artistName', 'albumName','date','genre' ]
+        };
+        new List('libraryContainer', options);
+}
 
 
 //old style
@@ -239,7 +250,7 @@ SpeakPlayer.Playlist = {
                 SpeakPlayer.Player.changeSong(nextSong);
             }
         }
-        $('#' + song.id).remove();
+        $('.' + song.id).remove();
 
         this.playlist = jQuery.grep(SpeakPlayer.Player.playlist, function (value) {
             return value != song;
@@ -249,19 +260,19 @@ SpeakPlayer.Playlist = {
         //display playlist object on screen
         SpeakPlayer.Player.playerContainer.show();
         var playerUl = this.playlistContainer.find('ul');
-        var htmlPlaying = "<li id='" + song.id + "' class='playing current song'>";
-        var htmlNoPlay = "<li id='" + song.id + "' class='song'>";
+        var htmlPlaying = "<li data-song-id='" + song.id + "' class='playing current song'>";
+        var htmlNoPlay = "<li data-song-id='" + song.id + "' class='song'>";
         var html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
             "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + playSVG + "</a><a href='#' class='pause'>" + pauseSVG + "</a></div><a href='#' class='remove'></li>";
 
-        if (this.playlistContainer.find('#' + song.id).length > 0) {
+        if (this.playlistContainer.find('.' + song.id).length > 0) {
             return false;
-        } else if (jQuery.isEmptyObject(SpeakPlayer.Player.playlist) || playOrder == PLAY_NOW) {
+        } else if (jQuery.isEmptyObject(SpeakPlayer.Playlist.playlist) || playOrder == SpeakPlayer.Player.PLAY_NOW) {
             playerUl.prepend(htmlPlaying + html);
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
             playerUl.sortable().disableSelection();
-        } else if (playOrder == ADD_TO_PLAYLIST) {
+        } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {
             playerUl.append(htmlNoPlay + html);
         } else {
             playerUl.find('.current').after(htmlNoPlay + html);
@@ -282,6 +293,8 @@ SpeakPlayer.Playlist = {
 
 ;/**
  * Created by vcimo5 on 9/30/14.
+ * This is the meat of the player, housing the controls.
+ * Set up as a singleton, as there should only be one instance of the player.
  */
 SpeakPlayer.Player = {
     playerContainer: $('#playerContainer'),
@@ -318,12 +331,14 @@ SpeakPlayer.Player = {
         this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
         this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
 
-        SpeakPlayer.Seekbar.init();
-        SpeakPlayer.Volumeslider.init();
 
         this.initControls();
         this.setListeners();
         this.bindPlayer();
+
+        SpeakPlayer.Seekbar.init();
+        SpeakPlayer.Volumeslider.init();
+
 
     },
     /* Sets Up Player Controls */
@@ -352,21 +367,13 @@ SpeakPlayer.Player = {
 
     bindPlayer: function () {
 
-        SpeakPlayer.Library.libraryContainer.on("mouseenter", "li .playOptions", function (event) {
-            $(this).transition({width: 'auto'}, 500, 'in-out');
-
-        });
-        SpeakPlayer.Library.libraryContainer.on("mouseleave", "li .playOptions", function (event) {
-            $(this).transition({width: '25'}, 500, 'in-out');
-
-        });
         //click handler for song objects in library
         SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NOW);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NOW);
             }
             return false;
         });
@@ -378,8 +385,8 @@ SpeakPlayer.Player = {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NEXT);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NEXT);
             }
             return false;
         });
@@ -388,23 +395,23 @@ SpeakPlayer.Player = {
             var el = $(this);
 
             if (player != null) {
-                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
-                SpeakPlayer.Playlist.addToPlaylist(song, this.ADD_TO_PLAYLIST);
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.ADD_TO_PLAYLIST);
             }
             return false;
         });
         //remove item click handler
         SpeakPlayer.Playlist.playlistContainer.on("click", ".remove", function () {
             el = $(this).parent();
-            song = SpeakPlayer.Player.getSong(el.attr('id'));
-            SpeakPlayer.Playlist.removeFromPlaylist();
+            var song = SpeakPlayer.Player.getSong(el.attr('id'));
+            SpeakPlayer.Playlist.removeFromPlaylist(song);
             return false;
         });
 
         //play item click handler
         SpeakPlayer.Playlist.playlistContainer.on("click", ".playOverlay", function (e) {
             var el = $(this).closest('.song');
-            song = SpeakPlayer.Player.getSong(el.attr('id'));
+            song = SpeakPlayer.Player.getSong(el.data('song-id'));
             if (!song.isLoaded) {
                 SpeakPlayer.Player.changeSong(song);
             } else if (el.hasClass('playing')) {
@@ -551,7 +558,7 @@ SpeakPlayer.Player = {
     getPreviousSong: function () {
         var endingSong = this.endSong();
         if (endingSong) {
-            prevSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
+            prevSongId = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + endingSong.id + ']').prev('li').data('song-id');
             return this.getSong(prevSongId)
         } else {
             return false;
@@ -571,7 +578,7 @@ SpeakPlayer.Player = {
     getNextSong: function () {
         var endingSong = this.endSong();
         if (endingSong) {
-            nextSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
+            nextSongId = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + endingSong.id + ']').next('li').data('song-id');
             return this.getSong(nextSongId);
         } else {
             return false;
@@ -614,9 +621,10 @@ SpeakPlayer.Player = {
         }
         //adds playing class to library and playlist items
         $('.song').removeClass('playing current');
-        $('.song#' + song.id).each(function () {
+        $('.song[data-song-id=' + song.id + ']').each(function () {
             $(this).addClass('playing current');
         });
+        SpeakPlayer.Library.renderFeature(song);
         SpeakPlayer.Player.setCurrentlyPlayingSong(song);
         SpeakPlayer.Player.isPlaying = true;
         /****************/
