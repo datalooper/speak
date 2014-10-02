@@ -2,7 +2,10 @@
  * Created by vcimo5 on 9/30/14.
  */
 //defines song model
-SpeakPlayer.Song = {
+
+var Song = function(){};
+
+Song.prototype = {
     isFeatured : false,
     isPlaying : false,
         isLoaded : false,
@@ -18,7 +21,10 @@ SpeakPlayer.Song = {
 
     create : function(obj) {
         // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
-        for (var prop in obj) this[prop] = obj[prop];
-        return obj;
+        var song = new Song();
+        for (var prop in obj) song[prop] = obj[prop];
+        return song;
     }
 }
+
+Song = new Song();

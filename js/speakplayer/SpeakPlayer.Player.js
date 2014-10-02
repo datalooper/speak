@@ -25,12 +25,27 @@ SpeakPlayer.Player = {
     PLAY_NEXT : 2,
     ADD_TO_PLAYLIST : 3,
 
+    /* Initially Renders Player */
     render: function (playerContainer) {
         this.playerContainer = playerContainer;
         var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a  href="#" class="playlist">' + playlistSVG + '</a><a href="#" class="volume">' + volumeSVG + '<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">' + prevSVG + '</a><a href="#" class="playPause">' + playSVG + '</a><a href="#" class="next">' + nextSVG + '</a></div></div>';
         this.playerContainer.append(html);
         this.isInitialized = true;
         this.el = this.playerContainer.find('#player');
+
+        this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
+        this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
+
+        SpeakPlayer.Seekbar.init();
+        SpeakPlayer.Volumeslider.init();
+
+        this.initControls();
+        this.setListeners();
+        this.bindPlayer();
+
+    },
+    /* Sets Up Player Controls */
+    initControls : function(){
         this.controls.el = this.playerContainer.find('#controls');
         this.controls.playPause = this.playerContainer.find('.playPause');
         this.controls.stop = this.playerContainer.find('.stop');
@@ -50,15 +65,9 @@ SpeakPlayer.Player = {
         });
         this.controls.startTime = this.playerContainer.find('#startTime');
         this.controls.endTime = this.playerContainer.find('#endTime');
-        this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
-        this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
-
-        SpeakPlayer.Seekbar.init();
-        SpeakPlayer.Volumeslider.init()
-        this.setListeners();
-        this.bindPlayer();
-
     },
+
+
     bindPlayer: function () {
 
         SpeakPlayer.Library.libraryContainer.on("mouseenter", "li .playOptions", function (event) {
@@ -115,7 +124,7 @@ SpeakPlayer.Player = {
             var el = $(this).closest('.song');
             song = SpeakPlayer.Player.getSong(el.attr('id'));
             if (!song.isLoaded) {
-                this.changeSong(song);
+                SpeakPlayer.Player.changeSong(song);
             } else if (el.hasClass('playing')) {
                 SpeakPlayer.Player.audioElement.pause();
                 el.removeClass('playing');
@@ -154,36 +163,36 @@ SpeakPlayer.Player = {
 
         //pauses player
         SpeakPlayer.Player.playerContainer.on("click", ".previous", function () {
-            seekPreviousSong();
+            SpeakPlayer.Player.seekPreviousSong();
         });
 
         //pauses player
         SpeakPlayer.Player.playerContainer.on("click", ".next", function () {
-            seekNextSong();
+            SpeakPlayer.Player.seekNextSong();
         });
     },
 
     setListeners: function () {
-        if (player.audioElement) {
+        if (SpeakPlayer.Player.audioElement) {
             var userSlideStarted = false,
-                seekBar = player.controls.seekBar,
-                audioEl = player.audioElement;
+                seekBar = SpeakPlayer.Player.controls.seekBar,
+                audioEl = SpeakPlayer.Player.audioElement;
 
             //waits until metadata is loaded to scale seekBar to track duration
             audioEl.addEventListener('loadedmetadata', function () {
                 seekBar.slider("option", "max", audioEl.duration * 10);
                 value = 0;
                 if (typeof(audio_clock) === "undefined" || audio_clock == null) {
-                    audio_clock = startSeeking();
+                    audio_clock = SpeakPlayer.Seekbar.startSeeking();
                 }
             });
 
             audioEl.addEventListener("pause", function () {
                 song.isPlaying = false;
-                if (player.controls.playPause.hasClass('playing')) {
-                    setPlayPauseButton(false);
-                    if (player.getCurrentlyPlayingSong()) {
-                        player.getCurrentlyPlayingSong().isPlaying = false;
+                if (SpeakPlayer.Player.controls.playPause.hasClass('playing')) {
+                    SpeakPlayer.Player.setPlayPauseButton(false);
+                    if (SpeakPlayer.Player.getCurrentlyPlayingSong()) {
+                        SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying = false;
                     }
                 }
                 clearInterval(audio_clock);
@@ -192,29 +201,29 @@ SpeakPlayer.Player = {
             //currently, this queries the DOM and checks for the next element.
             //in would probably be better to internally maintain the order of the playlist, but...later.
             audioEl.addEventListener('ended', function () {
-                removeFromPlaylist(player.getCurrentlyPlayingSong());
+                SpeakPlayer.Playlist.removeFromPlaylist(SpeakPlayer.Player.getCurrentlyPlayingSong());
             });
             audioEl.addEventListener("play", function () {
                 song.isPlaying = true;
-                if (!player.controls.playPause.hasClass('playing')) {
-                    setPlayPauseButton(true);
+                if (!SpeakPlayer.Player.controls.playPause.hasClass('playing')) {
+                    SpeakPlayer.Player.setPlayPauseButton(true);
                 }
                 //clears previous seekbar intervals
                 if (typeof(audio_clock) !== "undefined") {
                     clearInterval(audio_clock);
                     audio_clock = null;
                 }
-                audio_clock = startSeeking();
+                audio_clock = SpeakPlayer.Seekbar.startSeeking();
             });
         }
     },
     stopSong: function () {
         if (audio_clock !== "undefined" && audio_clock != null) {
             clearInterval(audio_clock);
-            player.controls.seekBar.slider("value", 0);
+            SpeakPlayer.Player.controls.seekBar.slider("value", 0);
         }
-        player.audioElement.pause();
-        player.audioElement.remove();
+        SpeakPlayer.Player.audioElement.pause();
+        SpeakPlayer.Player.audioElement.remove();
         song.isLoaded = false;
         song.isPlaying = false;
     },
@@ -234,7 +243,7 @@ SpeakPlayer.Player = {
     getCurrentlyPlayingSong: function () {
         for (var i = SpeakPlayer.Playlist.playlist.length - 1; i >= 0; i--) {
             if (SpeakPlayer.Playlist.playlist[i].isLoaded == true) {
-                return player.playlist[i];
+                return SpeakPlayer.Playlist.playlist[i];
             }
         }
     },
@@ -258,9 +267,9 @@ SpeakPlayer.Player = {
 
 
     getPreviousSong: function () {
-        var endingSong = endSong();
+        var endingSong = this.endSong();
         if (endingSong) {
-            prevSongId = this.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
+            prevSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
             return this.getSong(prevSongId)
         } else {
             return false;
@@ -278,9 +287,9 @@ SpeakPlayer.Player = {
     },
 
     getNextSong: function () {
-        var endingSong = endSong();
+        var endingSong = this.endSong();
         if (endingSong) {
-            nextSongId = this.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
+            nextSongId = SpeakPlayer.Playlist.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
             return this.getSong(nextSongId);
         } else {
             return false;
@@ -288,14 +297,14 @@ SpeakPlayer.Player = {
     },
 
     seekNextSong: function () {
-        var nextSong = getNextSong();
+        var nextSong = this.getNextSong();
         if (nextSong) {
             this.clearCurrentlyPlayingSong();
             this.changeSong(nextSong);
         }
     },
     seekPreviousSong: function () {
-        var prevSong = getPreviousSong();
+        var prevSong = this.getPreviousSong();
         if (prevSong) {
             this.clearCurrentlyPlayingSong();
             this.changeSong(prevSong);

@@ -16,7 +16,7 @@ SpeakPlayer.Playlist = {
 
         if (song == SpeakPlayer.Player.getCurrentlyPlayingSong()) {
             var nextSong = SpeakPlayer.Player.getNextSong();
-            stopSong();
+            SpeakPlayer.Player.stopSong();
             SpeakPlayer.Player.clearCurrentlyPlayingSong();
             if (nextSong != null) {
                 SpeakPlayer.Player.changeSong(nextSong);

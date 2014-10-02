@@ -10,7 +10,7 @@ SpeakPlayer.Seekbar = {
         });
         seekBar.on("slidechange", function (event, ui) {
             //track time change on seekbar
-            SpeakPlayer.Player.controls.startTime.html(secondsToTime(ui.value / 10));
+            SpeakPlayer.Player.controls.startTime.html(SpeakPlayer.Seekbar.secondsToTime(ui.value / 10));
         });
         //resumes seeking when user ends drag
         seekBar.on("slidestop", function (event, ui) {
@@ -18,7 +18,7 @@ SpeakPlayer.Seekbar = {
             value = seekBar.slider("value");
             SpeakPlayer.Player.audioElement.currentTime = value / 10;
             if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying) {
-                audio_clock = startSeeking();
+                audio_clock = SpeakPlayer.Seekbar.startSeeking();
             }
         });
     },
@@ -31,5 +31,14 @@ SpeakPlayer.Seekbar = {
 
         seconds = seconds < 10 ? "0" + seconds : seconds;
         return minutes + ":" + seconds;
+    },
+    //begins seeking. We avoid using the player callbacks, because they only execute every 250ms,
+    //making the seekBar seem grainy.
+    startSeeking : function() {
+        return setInterval(function () {
+            value += 1;
+            SpeakPlayer.Player.controls.seekBar.slider("value", value);
+
+        }, 100);
     }
 }

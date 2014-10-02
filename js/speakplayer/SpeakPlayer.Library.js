@@ -25,7 +25,7 @@ SpeakPlayer.Library = {
     populatePlayer: function (obj) {
 
         $.each(obj, function (key, song) {
-            var songObj = SpeakPlayer.Song.create(song);
+            var songObj = Song.create(song);
             SpeakPlayer.Player.songs.push(songObj);
         });
         this.renderSongs();
