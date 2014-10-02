@@ -3,254 +3,161 @@ for(this.cache={},this.cached_images=[],this.images_loaded=0===b;c--;){if(d++,a[
 c.compute_dimensions()}else a.S("[data-orbit]",a.scope).each(function(b,c){var d=a.S(c),e=(a.data_options(d),d.data(a.name+"-instance"));e.compute_dimensions()})}}}(jQuery,this,this.document),function(a,b,c,d){"use strict";function e(a){var b=/fade/i.test(a),c=/pop/i.test(a);return{animate:b||c,pop:c,fade:b}}Foundation.libs.reveal={name:"reveal",version:"5.2.2",locked:!1,settings:{animation:"fadeAndPop",animation_speed:250,close_on_background_click:!0,close_on_esc:!0,dismiss_modal_class:"close-reveal-modal",bg_class:"reveal-modal-bg",open:function(){},opened:function(){},close:function(){},closed:function(){},bg:a(".reveal-modal-bg"),css:{open:{opacity:0,visibility:"visible",display:"block"},close:{opacity:1,visibility:"hidden",display:"none"}}},init:function(b,c,d){a.extend(!0,this.settings,c,d),this.bindings(c,d)},events:function(){var a=this,b=a.S;return b(this.scope).off(".reveal").on("click.fndtn.reveal","["+this.add_namespace("data-reveal-id")+"]",function(c){if(c.preventDefault(),!a.locked){var d=b(this),e=d.data(a.data_attr("reveal-ajax"));if(a.locked=!0,"undefined"==typeof e)a.open.call(a,d);else{var f=e===!0?d.attr("href"):e;a.open.call(a,d,{url:f})}}}),b(c).on("touchend.fndtn.reveal click.fndtn.reveal",this.close_targets(),function(c){if(c.preventDefault(),!a.locked){var d=b("["+a.attr_name()+"].open").data(a.attr_name(!0)+"-init"),e=b(c.target)[0]===b("."+d.bg_class)[0];if(e){if(!d.close_on_background_click)return;c.stopPropagation()}a.locked=!0,a.close.call(a,e?b("["+a.attr_name()+"].open"):b(this).closest("["+a.attr_name()+"]"))}}),b("["+a.attr_name()+"]",this.scope).length>0?b(this.scope).on("open.fndtn.reveal",this.settings.open).on("opened.fndtn.reveal",this.settings.opened).on("opened.fndtn.reveal",this.open_video).on("close.fndtn.reveal",this.settings.close).on("closed.fndtn.reveal",this.settings.closed).on("closed.fndtn.reveal",this.close_video):b(this.scope).on("open.fndtn.reveal","["+a.attr_name()+"]",this.settings.open).on("opened.fndtn.reveal","["+a.attr_name()+"]",this.settings.opened).on("opened.fndtn.reveal","["+a.attr_name()+"]",this.open_video).on("close.fndtn.reveal","["+a.attr_name()+"]",this.settings.close).on("closed.fndtn.reveal","["+a.attr_name()+"]",this.settings.closed).on("closed.fndtn.reveal","["+a.attr_name()+"]",this.close_video),!0},key_up_on:function(){var a=this;return a.S("body").off("keyup.fndtn.reveal").on("keyup.fndtn.reveal",function(b){var c=a.S("["+a.attr_name()+"].open"),d=c.data(a.attr_name(!0)+"-init");d&&27===b.which&&d.close_on_esc&&!a.locked&&a.close.call(a,c)}),!0},key_up_off:function(){return this.S("body").off("keyup.fndtn.reveal"),!0},open:function(b,c){var d=this;if(b)if("undefined"!=typeof b.selector)var e=d.S("#"+b.data(d.data_attr("reveal-id")));else{var e=d.S(this.scope);c=b}else var e=d.S(this.scope);var f=e.data(d.attr_name(!0)+"-init");if(!e.hasClass("open")){var g=d.S("["+d.attr_name()+"].open");if("undefined"==typeof e.data("css-top")&&e.data("css-top",parseInt(e.css("top"),10)).data("offset",this.cache_offset(e)),this.key_up_on(e),e.trigger("open"),g.length<1&&this.toggle_bg(e),"string"==typeof c&&(c={url:c}),"undefined"!=typeof c&&c.url){var h="undefined"!=typeof c.success?c.success:null;a.extend(c,{success:function(b,c,i){a.isFunction(h)&&h(b,c,i),e.html(b),d.S(e).foundation("section","reflow"),g.length>0&&d.hide(g,f.css.close),d.show(e,f.css.open)}}),a.ajax(c)}else g.length>0&&this.hide(g,f.css.close),this.show(e,f.css.open)}},close:function(a){var a=a&&a.length?a:this.S(this.scope),b=this.S("["+this.attr_name()+"].open"),c=a.data(this.attr_name(!0)+"-init");b.length>0&&(this.locked=!0,this.key_up_off(a),a.trigger("close"),this.toggle_bg(a),this.hide(b,c.css.close,c))},close_targets:function(){var a="."+this.settings.dismiss_modal_class;return this.settings.close_on_background_click?a+", ."+this.settings.bg_class:a},toggle_bg:function(b){b.data(this.attr_name(!0));0===this.S("."+this.settings.bg_class).length&&(this.settings.bg=a("<div />",{"class":this.settings.bg_class}).appendTo("body").hide()),this.settings.bg.filter(":visible").length>0?this.hide(this.settings.bg):this.show(this.settings.bg)},show:function(c,d){if(d){var f=c.data(this.attr_name(!0)+"-init");if(0===c.parent("body").length){var g=c.wrap('<div style="display: none;" />').parent(),h=this.settings.rootElement||"body";c.on("closed.fndtn.reveal.wrapped",function(){c.detach().appendTo(g),c.unwrap().unbind("closed.fndtn.reveal.wrapped")}),c.detach().appendTo(h)}var i=e(f.animation);if(i.animate||(this.locked=!1),i.pop){d.top=a(b).scrollTop()-c.data("offset")+"px";var j={top:a(b).scrollTop()+c.data("css-top")+"px",opacity:1};return setTimeout(function(){return c.css(d).animate(j,f.animation_speed,"linear",function(){this.locked=!1,c.trigger("opened")}.bind(this)).addClass("open")}.bind(this),f.animation_speed/2)}if(i.fade){d.top=a(b).scrollTop()+c.data("css-top")+"px";var j={opacity:1};return setTimeout(function(){return c.css(d).animate(j,f.animation_speed,"linear",function(){this.locked=!1,c.trigger("opened")}.bind(this)).addClass("open")}.bind(this),f.animation_speed/2)}return c.css(d).show().css({opacity:1}).addClass("open").trigger("opened")}var f=this.settings;return e(f.animation).fade?c.fadeIn(f.animation_speed/2):(this.locked=!1,c.show())},hide:function(c,d){if(d){var f=c.data(this.attr_name(!0)+"-init"),g=e(f.animation);if(g.animate||(this.locked=!1),g.pop){var h={top:-a(b).scrollTop()-c.data("offset")+"px",opacity:0};return setTimeout(function(){return c.animate(h,f.animation_speed,"linear",function(){this.locked=!1,c.css(d).trigger("closed")}.bind(this)).removeClass("open")}.bind(this),f.animation_speed/2)}if(g.fade){var h={opacity:0};return setTimeout(function(){return c.animate(h,f.animation_speed,"linear",function(){this.locked=!1,c.css(d).trigger("closed")}.bind(this)).removeClass("open")}.bind(this),f.animation_speed/2)}return c.hide().css(d).removeClass("open").trigger("closed")}var f=this.settings;return e(f.animation).fade?c.fadeOut(f.animation_speed/2):c.hide()},close_video:function(b){var c=a(".flex-video",b.target),d=a("iframe",c);d.length>0&&(d.attr("data-src",d[0].src),d.attr("src","about:blank"),c.hide())},open_video:function(b){var c=a(".flex-video",b.target),e=c.find("iframe");if(e.length>0){var f=e.attr("data-src");if("string"==typeof f)e[0].src=e.attr("data-src");else{var g=e[0].src;e[0].src=d,e[0].src=g}c.show()}},data_attr:function(a){return this.namespace.length>0?this.namespace+"-"+a:a},cache_offset:function(a){var b=a.show().height()+parseInt(a.css("top"),10);return a.hide(),b},off:function(){a(this.scope).off(".fndtn.reveal")},reflow:function(){}}}(jQuery,this,this.document),function(a,b){"use strict";Foundation.libs.slider={name:"slider",version:"5.2.2",settings:{start:0,end:100,step:1,initial:null,display_selector:"",on_change:function(){}},cache:{},init:function(a,b,c){Foundation.inherit(this,"throttle"),this.bindings(b,c),this.reflow()},events:function(){var c=this;a(this.scope).off(".slider").on("mousedown.fndtn.slider touchstart.fndtn.slider pointerdown.fndtn.slider","["+c.attr_name()+"] .range-slider-handle",function(b){c.cache.active||(b.preventDefault(),c.set_active_slider(a(b.target)))}).on("mousemove.fndtn.slider touchmove.fndtn.slider pointermove.fndtn.slider",function(a){c.cache.active&&(a.preventDefault(),c.calculate_position(c.cache.active,a.pageX||a.originalEvent.clientX||a.originalEvent.touches[0].clientX||a.currentPoint.x))}).on("mouseup.fndtn.slider touchend.fndtn.slider pointerup.fndtn.slider",function(){c.remove_active_slider()}).on("change.fndtn.slider",function(){c.settings.on_change()}),c.S(b).on("resize.fndtn.slider",c.throttle(function(){c.reflow()},300))},set_active_slider:function(a){this.cache.active=a},remove_active_slider:function(){this.cache.active=null},calculate_position:function(b,c){var d=this,e=a.extend({},d.settings,d.data_options(b.parent())),f=(a.data(b[0],"handle_w"),a.data(b[0],"handle_o"),a.data(b[0],"bar_w")),g=a.data(b[0],"bar_o");requestAnimationFrame(function(){var a;a=Foundation.rtl?d.limit_to((g+f-c)/f,0,1):d.limit_to((c-g)/f,0,1);var h=d.normalized_value(a,e.start,e.end,e.step);d.set_ui(b,h)})},set_ui:function(b,c){var d=a.extend({},this.settings,this.data_options(b.parent())),e=a.data(b[0],"handle_w"),f=a.data(b[0],"bar_w"),g=this.normalized_percentage(c,d.start,d.end),h=g*(f-e)-1,i=100*g;Foundation.rtl&&(h=-h),this.set_translate(b,h),b.siblings(".range-slider-active-segment").css("width",i+"%"),b.parent().attr(this.attr_name(),c),b.parent().trigger("change"),b.parent().children("input[type=hidden]").val(c),""!=d.input_id&&a(d.display_selector).each(function(){this.hasOwnProperty("value")?a(this).val(c):a(this).text(c)})},normalized_percentage:function(a,b,c){return(a-b)/(c-b)},normalized_value:function(a,b,c,d){var e=c-b,d=d,f=a*e,g=(f-f%d)/d,h=f%d,i=h>=.5*d?d:0;return g*d+i+b},set_translate:function(b,c,d){d?a(b).css("-webkit-transform","translateY("+c+"px)").css("-moz-transform","translateY("+c+"px)").css("-ms-transform","translateY("+c+"px)").css("-o-transform","translateY("+c+"px)").css("transform","translateY("+c+"px)"):a(b).css("-webkit-transform","translateX("+c+"px)").css("-moz-transform","translateX("+c+"px)").css("-ms-transform","translateX("+c+"px)").css("-o-transform","translateX("+c+"px)").css("transform","translateX("+c+"px)")},limit_to:function(a,b,c){return Math.min(Math.max(a,b),c)},initialize_settings:function(b){a.data(b,"bar",a(b).parent()),a.data(b,"bar_o",a(b).parent().offset().left),a.data(b,"bar_w",a(b).parent().outerWidth()),a.data(b,"handle_o",a(b).offset().left),a.data(b,"handle_w",a(b).outerWidth()),a.data(b,"settings",a.extend({},this.settings,this.data_options(a(b).parent())))},set_initial_position:function(b){var c=a.data(b.children(".range-slider-handle")[0],"settings"),d=c.initial?c.initial:Math.floor(.5*(c.end-c.start)/c.step)*c.step+c.start,e=b.children(".range-slider-handle");this.set_ui(e,d)},set_value:function(b){var c=this;a("["+c.attr_name()+"]",this.scope).each(function(){a(this).attr(c.attr_name(),b)}),a(this.scope).attr(c.attr_name())&&a(this.scope).attr(c.attr_name(),b),c.reflow()},reflow:function(){var b=this;b.S("["+this.attr_name()+"]").each(function(){var c=a(this).children(".range-slider-handle")[0],d=a(this).attr(b.attr_name());b.initialize_settings(c),d?b.set_ui(a(c),parseFloat(d)):b.set_initial_position(a(this))})}}}(jQuery,this,this.document),function(a,b,c,d){"use strict";Foundation.libs.tab={name:"tab",version:"5.2.2",settings:{active_class:"active",callback:function(){},deep_linking:!1,scroll_to_content:!0,is_hover:!1},default_tab_hashes:[],init:function(a,b,c){var d=this,e=this.S;this.bindings(b,c),this.handle_location_hash_change(),e("["+this.attr_name()+"] > dd.active > a",this.scope).each(function(){d.default_tab_hashes.push(this.hash)})},events:function(){var a=this,c=this.S;c(this.scope).off(".tab").on("click.fndtn.tab","["+this.attr_name()+"] > dd > a",function(b){var d=c(this).closest("["+a.attr_name()+"]").data(a.attr_name(!0)+"-init");(!d.is_hover||Modernizr.touch)&&(b.preventDefault(),b.stopPropagation(),a.toggle_active_tab(c(this).parent()))}).on("mouseenter.fndtn.tab","["+this.attr_name()+"] > dd > a",function(){var b=c(this).closest("["+a.attr_name()+"]").data(a.attr_name(!0)+"-init");b.is_hover&&a.toggle_active_tab(c(this).parent())}),c(b).on("hashchange.fndtn.tab",function(b){b.preventDefault(),a.handle_location_hash_change()})},handle_location_hash_change:function(){var b=this,c=this.S;c("["+this.attr_name()+"]",this.scope).each(function(){var e=c(this).data(b.attr_name(!0)+"-init");if(e.deep_linking){var f=b.scope.location.hash;if(""!=f){var g=c(f);if(g.hasClass("content")&&g.parent().hasClass("tab-content"))b.toggle_active_tab(a("["+b.attr_name()+"] > dd > a[href="+f+"]").parent());else{var h=g.closest(".content").attr("id");h!=d&&b.toggle_active_tab(a("["+b.attr_name()+"] > dd > a[href=#"+h+"]").parent(),f)}}else for(var i in b.default_tab_hashes)b.toggle_active_tab(a("["+b.attr_name()+"] > dd > a[href="+b.default_tab_hashes[i]+"]").parent())}})},toggle_active_tab:function(c,e){var f=this.S,g=c.closest("["+this.attr_name()+"]"),h=c.children("a").first(),i="#"+h.attr("href").split("#")[1],j=f(i),k=c.siblings(),l=g.data(this.attr_name(!0)+"-init");if(f(this).data(this.data_attr("tab-content"))&&(i="#"+f(this).data(this.data_attr("tab-content")).split("#")[1],j=f(i)),l.deep_linking){var m=a("body,html").scrollTop();b.location.hash=e!=d?e:i,l.scroll_to_content?e==d||e==i?c.parent()[0].scrollIntoView():f(i)[0].scrollIntoView():(e==d||e==i)&&a("body,html").scrollTop(m)}c.addClass(l.active_class).triggerHandler("opened"),k.removeClass(l.active_class),j.siblings().removeClass(l.active_class).end().addClass(l.active_class),l.callback(c),j.triggerHandler("toggled",[c]),g.triggerHandler("toggled",[j])},data_attr:function(a){return this.namespace.length>0?this.namespace+"-"+a:a},off:function(){},reflow:function(){}}}(jQuery,this,this.document),function(a,b){"use strict";Foundation.libs.tooltip={name:"tooltip",version:"5.2.2",settings:{additional_inheritable_classes:[],tooltip_class:".tooltip",append_to:"body",touch_close_text:"Tap To Close",disable_for_touch:!1,hover_delay:200,tip_template:function(a,b){return'<span data-selector="'+a+'" class="'+Foundation.libs.tooltip.settings.tooltip_class.substring(1)+'">'+b+'<span class="nub"></span></span>'}},cache:{},init:function(a,b,c){Foundation.inherit(this,"random_str"),this.bindings(b,c)},events:function(b){var c=this,d=c.S;c.create(this.S(b)),a(this.scope).off(".tooltip").on("mouseenter.fndtn.tooltip mouseleave.fndtn.tooltip touchstart.fndtn.tooltip MSPointerDown.fndtn.tooltip","["+this.attr_name()+"]",function(b){var e=d(this),f=a.extend({},c.settings,c.data_options(e)),g=!1;if(Modernizr.touch&&/touchstart|MSPointerDown/i.test(b.type)&&d(b.target).is("a"))return!1;if(/mouse/i.test(b.type)&&c.ie_touch(b))return!1;if(e.hasClass("open"))Modernizr.touch&&/touchstart|MSPointerDown/i.test(b.type)&&b.preventDefault(),c.hide(e);else{if(f.disable_for_touch&&Modernizr.touch&&/touchstart|MSPointerDown/i.test(b.type))return;!f.disable_for_touch&&Modernizr.touch&&/touchstart|MSPointerDown/i.test(b.type)&&(b.preventDefault(),d(f.tooltip_class+".open").hide(),g=!0),/enter|over/i.test(b.type)?this.timer=setTimeout(function(){c.showTip(e)}.bind(this),c.settings.hover_delay):"mouseout"===b.type||"mouseleave"===b.type?(clearTimeout(this.timer),c.hide(e)):c.showTip(e)}}).on("mouseleave.fndtn.tooltip touchstart.fndtn.tooltip MSPointerDown.fndtn.tooltip","["+this.attr_name()+"].open",function(b){return/mouse/i.test(b.type)&&c.ie_touch(b)?!1:void(("touch"!=a(this).data("tooltip-open-event-type")||"mouseleave"!=b.type)&&("mouse"==a(this).data("tooltip-open-event-type")&&/MSPointerDown|touchstart/i.test(b.type)?c.convert_to_touch(a(this)):c.hide(a(this))))}).on("DOMNodeRemoved DOMAttrModified","["+this.attr_name()+"]:not(a)",function(){c.hide(d(this))})},ie_touch:function(){return!1},showTip:function(a){this.getTip(a);return this.show(a)},getTip:function(b){var c=this.selector(b),d=a.extend({},this.settings,this.data_options(b)),e=null;return c&&(e=this.S('span[data-selector="'+c+'"]'+d.tooltip_class)),"object"==typeof e?e:!1},selector:function(a){var b=a.attr("id"),c=a.attr(this.attr_name())||a.attr("data-selector");return(b&&b.length<1||!b)&&"string"!=typeof c&&(c=this.random_str(6),a.attr("data-selector",c)),b&&b.length>0?b:c},create:function(c){var d=this,e=a.extend({},this.settings,this.data_options(c)),f=this.settings.tip_template;"string"==typeof e.tip_template&&b.hasOwnProperty(e.tip_template)&&(f=b[e.tip_template]);var g=a(f(this.selector(c),a("<div></div>").html(c.attr("title")).html())),h=this.inheritable_classes(c);g.addClass(h).appendTo(e.append_to),Modernizr.touch&&(g.append('<span class="tap-to-close">'+e.touch_close_text+"</span>"),g.on("touchstart.fndtn.tooltip MSPointerDown.fndtn.tooltip",function(){d.hide(c)})),c.removeAttr("title").attr("title","")},reposition:function(b,c,d){var e,f,g,h,i;if(c.css("visibility","hidden").show(),e=b.data("width"),f=c.children(".nub"),g=f.outerHeight(),h=f.outerHeight(),c.css(this.small()?{width:"100%"}:{width:e?e:"auto"}),i=function(a,b,c,d,e){return a.css({top:b?b:"auto",bottom:d?d:"auto",left:e?e:"auto",right:c?c:"auto"}).end()},i(c,b.offset().top+b.outerHeight()+10,"auto","auto",b.offset().left),this.small())i(c,b.offset().top+b.outerHeight()+10,"auto","auto",12.5,a(this.scope).width()),c.addClass("tip-override"),i(f,-g,"auto","auto",b.offset().left);else{var j=b.offset().left;Foundation.rtl&&(f.addClass("rtl"),j=b.offset().left+b.outerWidth()-c.outerWidth()),i(c,b.offset().top+b.outerHeight()+10,"auto","auto",j),c.removeClass("tip-override"),d&&d.indexOf("tip-top")>-1?(Foundation.rtl&&f.addClass("rtl"),i(c,b.offset().top-c.outerHeight(),"auto","auto",j).removeClass("tip-override")):d&&d.indexOf("tip-left")>-1?(i(c,b.offset().top+b.outerHeight()/2-c.outerHeight()/2,"auto","auto",b.offset().left-c.outerWidth()-g).removeClass("tip-override"),f.removeClass("rtl")):d&&d.indexOf("tip-right")>-1&&(i(c,b.offset().top+b.outerHeight()/2-c.outerHeight()/2,"auto","auto",b.offset().left+b.outerWidth()+g).removeClass("tip-override"),f.removeClass("rtl"))}c.css("visibility","visible").hide()},small:function(){return matchMedia(Foundation.media_queries.small).matches&&!matchMedia(Foundation.media_queries.medium).matches},inheritable_classes:function(b){var c=a.extend({},this.settings,this.data_options(b)),d=["tip-top","tip-left","tip-bottom","tip-right","radius","round"].concat(c.additional_inheritable_classes),e=b.attr("class"),f=e?a.map(e.split(" "),function(b){return-1!==a.inArray(b,d)?b:void 0}).join(" "):"";return a.trim(f)},convert_to_touch:function(b){var c=this,d=c.getTip(b),e=a.extend({},c.settings,c.data_options(b));0===d.find(".tap-to-close").length&&(d.append('<span class="tap-to-close">'+e.touch_close_text+"</span>"),d.on("click.fndtn.tooltip.tapclose touchstart.fndtn.tooltip.tapclose MSPointerDown.fndtn.tooltip.tapclose",function(){c.hide(b)})),b.data("tooltip-open-event-type","touch")},show:function(a){var b=this.getTip(a);"touch"==a.data("tooltip-open-event-type")&&this.convert_to_touch(a),this.reposition(a,b,a.attr("class")),a.addClass("open"),b.fadeIn(150)},hide:function(a){var b=this.getTip(a);b.fadeOut(150,function(){b.find(".tap-to-close").remove(),b.off("click.fndtn.tooltip.tapclose touchstart.fndtn.tooltip.tapclose MSPointerDown.fndtn.tapclose"),a.removeClass("open")})},off:function(){var b=this;this.S(this.scope).off(".fndtn.tooltip"),this.S(this.settings.tooltip_class).each(function(c){a("["+b.attr_name()+"]").eq(c).attr("title",a(this).text())}).remove()},reflow:function(){}}}(jQuery,this,this.document),function(a,b,c){"use strict";Foundation.libs.topbar={name:"topbar",version:"5.2.2",settings:{index:0,sticky_class:"sticky",custom_back_text:!0,back_text:"Back",is_hover:!0,mobile_show_parent_link:!1,scrolltop:!0,sticky_on:"all"},init:function(b,c,d){Foundation.inherit(this,"add_custom_rule register_media throttle");var e=this;e.register_media("topbar","foundation-mq-topbar"),this.bindings(c,d),e.S("["+this.attr_name()+"]",this.scope).each(function(){{var b=a(this),c=b.data(e.attr_name(!0)+"-init");e.S("section",this),b.children().filter("ul").first()}b.data("index",0);var d=b.parent();d.hasClass("fixed")||e.is_sticky(b,d,c)?(e.settings.sticky_class=c.sticky_class,e.settings.sticky_topbar=b,b.data("height",d.outerHeight()),b.data("stickyoffset",d.offset().top)):b.data("height",b.outerHeight()),c.assembled||e.assemble(b),c.is_hover?e.S(".has-dropdown",b).addClass("not-click"):e.S(".has-dropdown",b).removeClass("not-click"),e.add_custom_rule(".f-topbar-fixed { padding-top: "+b.data("height")+"px }"),d.hasClass("fixed")&&e.S("body").addClass("f-topbar-fixed")})},is_sticky:function(a,b,c){var d=b.hasClass(c.sticky_class);return d&&"all"===c.sticky_on?!0:d&&this.small()&&"small"===c.sticky_on?!0:d&&this.medium()&&"medium"===c.sticky_on?!0:d&&this.large()&&"large"===c.sticky_on?!0:!1},toggle:function(c){var d=this;if(c)var e=d.S(c).closest("["+this.attr_name()+"]");else var e=d.S("["+this.attr_name()+"]");var f=e.data(this.attr_name(!0)+"-init"),g=d.S("section, .section",e);d.breakpoint()&&(d.rtl?(g.css({right:"0%"}),a(">.name",g).css({right:"100%"})):(g.css({left:"0%"}),a(">.name",g).css({left:"100%"})),d.S("li.moved",g).removeClass("moved"),e.data("index",0),e.toggleClass("expanded").css("height","")),f.scrolltop?e.hasClass("expanded")?e.parent().hasClass("fixed")&&(f.scrolltop?(e.parent().removeClass("fixed"),e.addClass("fixed"),d.S("body").removeClass("f-topbar-fixed"),b.scrollTo(0,0)):e.parent().removeClass("expanded")):e.hasClass("fixed")&&(e.parent().addClass("fixed"),e.removeClass("fixed"),d.S("body").addClass("f-topbar-fixed")):(d.is_sticky(e,e.parent(),f)&&e.parent().addClass("fixed"),e.parent().hasClass("fixed")&&(e.hasClass("expanded")?(e.addClass("fixed"),e.parent().addClass("expanded"),d.S("body").addClass("f-topbar-fixed")):(e.removeClass("fixed"),e.parent().removeClass("expanded"),d.update_sticky_positioning())))},timer:null,events:function(){var c=this,d=this.S;d(this.scope).off(".topbar").on("click.fndtn.topbar","["+this.attr_name()+"] .toggle-topbar",function(a){a.preventDefault(),c.toggle(this)}).on("click.fndtn.topbar",'.top-bar .top-bar-section li a[href^="#"],['+this.attr_name()+'] .top-bar-section li a[href^="#"]',function(){var b=a(this).closest("li");!c.breakpoint()||b.hasClass("back")||b.hasClass("has-dropdown")||c.toggle()}).on("click.fndtn.topbar","["+this.attr_name()+"] li.has-dropdown",function(b){var e=d(this),f=d(b.target),g=e.closest("["+c.attr_name()+"]"),h=g.data(c.attr_name(!0)+"-init");return f.data("revealId")?void c.toggle():void(c.breakpoint()||(!h.is_hover||Modernizr.touch)&&(b.stopImmediatePropagation(),e.hasClass("hover")?(e.removeClass("hover").find("li").removeClass("hover"),e.parents("li.hover").removeClass("hover")):(e.addClass("hover"),a(e).siblings().removeClass("hover"),"A"===f[0].nodeName&&f.parent().hasClass("has-dropdown")&&b.preventDefault())))}).on("click.fndtn.topbar","["+this.attr_name()+"] .has-dropdown>a",function(a){if(c.breakpoint()){a.preventDefault();var b=d(this),e=b.closest("["+c.attr_name()+"]"),f=e.find("section, .section"),g=(b.next(".dropdown").outerHeight(),b.closest("li"));e.data("index",e.data("index")+1),g.addClass("moved"),c.rtl?(f.css({right:-(100*e.data("index"))+"%"}),f.find(">.name").css({right:100*e.data("index")+"%"})):(f.css({left:-(100*e.data("index"))+"%"}),f.find(">.name").css({left:100*e.data("index")+"%"})),e.css("height",b.siblings("ul").outerHeight(!0)+e.data("height"))}}),d(b).off(".topbar").on("resize.fndtn.topbar",c.throttle(function(){c.resize.call(c)},50)).trigger("resize"),d("body").off(".topbar").on("click.fndtn.topbar touchstart.fndtn.topbar",function(a){var b=d(a.target).closest("li").closest("li.hover");b.length>0||d("["+c.attr_name()+"] li.hover").removeClass("hover")}),d(this.scope).on("click.fndtn.topbar","["+this.attr_name()+"] .has-dropdown .back",function(a){a.preventDefault();var b=d(this),e=b.closest("["+c.attr_name()+"]"),f=e.find("section, .section"),g=(e.data(c.attr_name(!0)+"-init"),b.closest("li.moved")),h=g.parent();e.data("index",e.data("index")-1),c.rtl?(f.css({right:-(100*e.data("index"))+"%"}),f.find(">.name").css({right:100*e.data("index")+"%"})):(f.css({left:-(100*e.data("index"))+"%"}),f.find(">.name").css({left:100*e.data("index")+"%"})),0===e.data("index")?e.css("height",""):e.css("height",h.outerHeight(!0)+e.data("height")),setTimeout(function(){g.removeClass("moved")},300)})},resize:function(){var a=this;a.S("["+this.attr_name()+"]").each(function(){var b,d=a.S(this),e=d.data(a.attr_name(!0)+"-init"),f=d.parent("."+a.settings.sticky_class);if(!a.breakpoint()){var g=d.hasClass("expanded");d.css("height","").removeClass("expanded").find("li").removeClass("hover"),g&&a.toggle(d)}a.is_sticky(d,f,e)&&(f.hasClass("fixed")?(f.removeClass("fixed"),b=f.offset().top,a.S(c.body).hasClass("f-topbar-fixed")&&(b-=d.data("height")),d.data("stickyoffset",b),f.addClass("fixed")):(b=f.offset().top,d.data("stickyoffset",b)))})},breakpoint:function(){return!matchMedia(Foundation.media_queries.topbar).matches},small:function(){return matchMedia(Foundation.media_queries.small).matches},medium:function(){return matchMedia(Foundation.media_queries.medium).matches},large:function(){return matchMedia(Foundation.media_queries.large).matches},assemble:function(b){{var c=this,d=b.data(this.attr_name(!0)+"-init"),e=c.S("section",b);a(this).children().filter("ul").first()}e.detach(),c.S(".has-dropdown>a",e).each(function(){var b=c.S(this),e=b.siblings(".dropdown"),f=b.attr("href");if(!e.find(".title.back").length){if(d.mobile_show_parent_link&&f&&f.length>1)var g=a('<li class="title back js-generated"><h5><a href="javascript:void(0)"></a></h5></li><li><a class="parent-link js-generated" href="'+f+'">'+b.text()+"</a></li>");else var g=a('<li class="title back js-generated"><h5><a href="javascript:void(0)"></a></h5></li>');a("h5>a",g).html(1==d.custom_back_text?d.back_text:"&laquo; "+b.html()),e.prepend(g)}}),e.appendTo(b),this.sticky(),this.assembled(b)},assembled:function(b){b.data(this.attr_name(!0),a.extend({},b.data(this.attr_name(!0)),{assembled:!0}))},height:function(b){var c=0,d=this;return a("> li",b).each(function(){c+=d.S(this).outerHeight(!0)}),c},sticky:function(){var a=(this.S(b),this);this.S(b).on("scroll",function(){a.update_sticky_positioning()})},update_sticky_positioning:function(){var a="."+this.settings.sticky_class,c=this.S(b),d=this;if(d.settings.sticky_topbar&&d.is_sticky(this.settings.sticky_topbar,this.settings.sticky_topbar.parent(),this.settings)){var e=this.settings.sticky_topbar.data("stickyoffset");d.S(a).hasClass("expanded")||(c.scrollTop()>e?d.S(a).hasClass("fixed")||(d.S(a).addClass("fixed"),d.S("body").addClass("f-topbar-fixed")):c.scrollTop()<=e&&d.S(a).hasClass("fixed")&&(d.S(a).removeClass("fixed"),d.S("body").removeClass("f-topbar-fixed")))}},off:function(){this.S(this.scope).off(".fndtn.topbar"),this.S(b).off(".fndtn.topbar")},reflow:function(){}}}(jQuery,this,this.document);;$(document).foundation();
 
 
-;/* Retrieve Data From Plugin */
+;/**
+ * Created by vcimo5 on 9/30/14.
+ */
+jQuery(document).ready(function ($) {
+    console.log("document loaded");
+    SpeakPlayer.init($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
 
-function populatePlayer(obj){
+});
 
-	$.each( obj, function( key, song ) {
-		var songObj = new SpeakPlayer.Song(song);
-		SpeakPlayer.player.songs.push(songObj);
-	});
-	renderSongs();
+SpeakPlayer = {
+    isInitialized : "false",
+    init: function (libraryContainer, playerContainer, playlistContainer) {
+        console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", this.isInitialized, libraryContainer.length);
+        if (this.isInitialized == "false" && libraryContainer.length > 0) {
+            console.log('init');
 
-}
+            this.defineSVG();
+            this.Library.render(libraryContainer);
+            this.Playlist.render(playlistContainer);
 
-function sortByKey(array, key) {
-	return array.sort(function(a, b) {
-		var x = a[key]; var y = b[key];
-		return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-	});
-}
-
-function preparePlayerData(){
-	var data = {
-		action: 'get_songs',
-		security : MyAjax.security,
-		whatever: 1234
-	};
-
-  // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-  $.post(MyAjax.ajaxurl, data, function(response) {
-  	var obj = jQuery.parseJSON( response );
-  	populatePlayer(obj);
-  });
-}
+            this.Player.render(playerContainer);		//only want to call once
+            //this.Visualizer.initVisualizer();
+        }
+    },
 
 
-/* Init */
+    defineSVG: function () {
+        prevSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="15.799px" viewBox="2 5.6 24 15.799" enable-background="new 2 5.6 24 15.799" xml:space="preserve"><polygon fill="#969696" points="8.84,17.45 15.682,21.399 15.682,15.441 19.161,17.45 26,21.399 26,13.5 26,5.6 19.161,9.55 15.682,11.557 15.682,5.6 8.84,9.55 2,13.5 "/></svg>';
+        nextSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="15.799px" viewBox="2 5.6 24 15.799" enable-background="new 2 5.6 24 15.799" xml:space="preserve"><polygon fill="#969696" points="19.16,9.547 12.318,5.598 12.318,11.556 8.839,9.547 2,5.598 2,13.498 2,21.396 8.839,17.446 12.318,15.439 12.318,21.396 19.16,17.446 26,13.498 "/></svg>';
+        volumeSVG = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="31.967px" height="24.826px" viewBox="242.491 244.087 31.967 24.826" enable-background="new 242.491 244.087 31.967 24.826" xml:space="preserve"><style>.style0{fill:	#969696;}.style1{stroke:	#969696;stroke-linecap:	round;fill:	none;}</style><g><path d="M250.632 260.729c-0.091-0.079-0.207-0.122-0.327-0.122h-7.314v-8.329h7.438 c0.12 0 0.236-0.043 0.327-0.122l7.561-6.538v21.761L250.632 260.729z" class="style0"/><path d="M257.816 246.712v19.574l-6.857-5.935c-0.182-0.157-0.414-0.244-0.654-0.244h-6.814v-7.329h6.938 c0.24 0 0.472-0.086 0.654-0.244L257.816 246.7 M258.816 244.526l-8.388 7.252h-7.938v9.329h7.814l8.512 7.366V244.526 L258.816 244.526z" class="style0"/></g><path d="M263.086 261.765c0.943-1.514 1.499-3.289 1.499-5.21 c0-1.944-0.57-3.751-1.542-5.278" class="style1"/><path d="M266.486 247.835c1.803 2.4 2.9 5.5 2.9 8.7 c0 3.235-1.041 6.235-2.824 8.7" class="style1"/><path d="M269.724 268.402c2.571-3.252 4.117-7.368 4.117-11.848 c0-4.502-1.56-8.641-4.165-11.911" class="style1"/></svg>';
+        playSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="23.379px" height="27px" viewBox="0 0 23.379 27" enable-background="new 0 0 23.379 27" xml:space="preserve"><polygon fill="#969696" points="0,27 11.692,20.248 23.379,13.5 11.692,6.749 0,0 "/></svg>';
+        pauseSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="23.379px" height="27px" viewBox="0 0 23.379 27" enable-background="new 0 0 23.379 27" xml:space="preserve"><rect x="14.678" y="-0.003" fill="#969696" width="6.701" height="27.007"/><rect x="2" y="-0.003" fill="#969696" width="6.701" height="27.007"/></svg>';
+        playlistSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="27px" height="24.826px" viewBox="242.491 244.087 27 24.826" enable-background="new 242.491 244.087 27 24.826" xml:space="preserve"><rect x="242.491" y="266.402" fill="#969696" width="8.368" height="2.511"/><rect x="242.491" y="260.823" fill="#969696" width="8.368" height="2.511"/><rect x="242.491" y="255.245" fill="#969696" width="15.063" height="2.51"/><rect x="242.491" y="249.666" fill="#969696" width="15.063" height="2.51"/><rect x="242.491" y="244.087" fill="#969696" width="15.063" height="2.51"/><path fill="#969696" d="M255.869,268.484c-1.142-0.289-2.202-1.127-2.503-2.302c-0.315-1.122,0.097-2.326,0.803-3.212c1.311-1.641,3.559-2.481,5.622-2.094c0.017-5.49-0.001-10.98,0.009-16.47c0.498,0.733,1.035,1.451,1.707,2.037c1.428,1.294,3.204,2.117,4.671,3.358c1.266,1.078,2.364,2.414,2.925,3.996c0.411,1.131,0.495,2.374,0.256,3.552c-0.315,1.513-1.243,2.364-2.243,3.531c0.341-1.408,0.729-2.357,0.294-3.771c-0.29-0.98-0.925-1.831-1.716-2.466c-0.904-0.73-1.964-1.234-3.028-1.687c-0.014,3.627-0.001,7.255-0.006,10.883c0.056,1.252-0.583,2.45-1.498,3.273C259.76,268.381,257.712,268.958,255.869,268.484"/></svg>';
+        expandSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12.75px" height="25.54px" viewBox="0 0 12.75 25.54" enable-background="new 0 0 12.75 25.54" xml:space="preserve"><g><path fill="#E7E7E7" d="M0.539,0.843C0.242,0.379,0.45,0,1,0h2.546c0.55,0,1.248,0.375,1.551,0.834l7.274,11.025 c0.303,0.459,0.304,1.21,0.001,1.67L5.115,24.576c-0.302,0.46-1,0.836-1.549,0.836H1.051c-0.55,0-0.759-0.38-0.464-0.845 l6.991-11.028c0.295-0.465,0.293-1.224-0.003-1.688L0.539,0.843z"/></g></svg>';
+    }
 
-function initSpeakPlayer(libraryContainer, playerContainer, playlistContainer){
-	console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", SpeakPlayer.player.isInitialized, libraryContainer.length);
-	if(SpeakPlayer.player.isInitialized == "false" && libraryContainer.length > 0){
-		console.log('init');
-        SpeakPlayer.player.playerContainer = playerContainer;
-        SpeakPlayer.player.playlistContainer = playlistContainer;
-        SpeakPlayer.player.libraryContainer = libraryContainer;
-		defineSVG();
-		preparePlayerData();
-		renderPlayer();		//only want to call once
-		renderPlaylist();
-		initVisualizer();
-		startInteractionTimer();
-	}
-}
+};
 
-function onNoInteraction(){
-	$('canvas.sketch').addClass('opaque');
-	SpeakPlayer.player.libraryContainer.addClass('transparent');
-
-}
-function startInteractionTimer(){
-
-	var interactionTimer = setTimeout(function(){onNoInteraction();}, 5000);
-
-	SpeakPlayer.player.libraryContainer.hover(function(){
-		$('canvas.sketch').removeClass('opaque');
-
-		SpeakPlayer.player.libraryContainer.removeClass('transparent');
-		clearTimeout(interactionTimer);
-	},
-	function(){
-		interactionTimer = setTimeout(function(){onNoInteraction();}, 5000);
-	});
-}
-function defineSVG(){
-	prevSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="15.799px" viewBox="2 5.6 24 15.799" enable-background="new 2 5.6 24 15.799" xml:space="preserve"><polygon fill="#969696" points="8.84,17.45 15.682,21.399 15.682,15.441 19.161,17.45 26,21.399 26,13.5 26,5.6 19.161,9.55 15.682,11.557 15.682,5.6 8.84,9.55 2,13.5 "/></svg>';
-	nextSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="15.799px" viewBox="2 5.6 24 15.799" enable-background="new 2 5.6 24 15.799" xml:space="preserve"><polygon fill="#969696" points="19.16,9.547 12.318,5.598 12.318,11.556 8.839,9.547 2,5.598 2,13.498 2,21.396 8.839,17.446 12.318,15.439 12.318,21.396 19.16,17.446 26,13.498 "/></svg>';
-	volumeSVG = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" width="31.967px" height="24.826px" viewBox="242.491 244.087 31.967 24.826" enable-background="new 242.491 244.087 31.967 24.826" xml:space="preserve"><style>.style0{fill:	#969696;}.style1{stroke:	#969696;stroke-linecap:	round;fill:	none;}</style><g><path d="M250.632 260.729c-0.091-0.079-0.207-0.122-0.327-0.122h-7.314v-8.329h7.438 c0.12 0 0.236-0.043 0.327-0.122l7.561-6.538v21.761L250.632 260.729z" class="style0"/><path d="M257.816 246.712v19.574l-6.857-5.935c-0.182-0.157-0.414-0.244-0.654-0.244h-6.814v-7.329h6.938 c0.24 0 0.472-0.086 0.654-0.244L257.816 246.7 M258.816 244.526l-8.388 7.252h-7.938v9.329h7.814l8.512 7.366V244.526 L258.816 244.526z" class="style0"/></g><path d="M263.086 261.765c0.943-1.514 1.499-3.289 1.499-5.21 c0-1.944-0.57-3.751-1.542-5.278" class="style1"/><path d="M266.486 247.835c1.803 2.4 2.9 5.5 2.9 8.7 c0 3.235-1.041 6.235-2.824 8.7" class="style1"/><path d="M269.724 268.402c2.571-3.252 4.117-7.368 4.117-11.848 c0-4.502-1.56-8.641-4.165-11.911" class="style1"/></svg>';
-	playSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="23.379px" height="27px" viewBox="0 0 23.379 27" enable-background="new 0 0 23.379 27" xml:space="preserve"><polygon fill="#969696" points="0,27 11.692,20.248 23.379,13.5 11.692,6.749 0,0 "/></svg>';
-	pauseSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="23.379px" height="27px" viewBox="0 0 23.379 27" enable-background="new 0 0 23.379 27" xml:space="preserve"><rect x="14.678" y="-0.003" fill="#969696" width="6.701" height="27.007"/><rect x="2" y="-0.003" fill="#969696" width="6.701" height="27.007"/></svg>';
-	playlistSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="27px" height="24.826px" viewBox="242.491 244.087 27 24.826" enable-background="new 242.491 244.087 27 24.826" xml:space="preserve"><rect x="242.491" y="266.402" fill="#969696" width="8.368" height="2.511"/><rect x="242.491" y="260.823" fill="#969696" width="8.368" height="2.511"/><rect x="242.491" y="255.245" fill="#969696" width="15.063" height="2.51"/><rect x="242.491" y="249.666" fill="#969696" width="15.063" height="2.51"/><rect x="242.491" y="244.087" fill="#969696" width="15.063" height="2.51"/><path fill="#969696" d="M255.869,268.484c-1.142-0.289-2.202-1.127-2.503-2.302c-0.315-1.122,0.097-2.326,0.803-3.212c1.311-1.641,3.559-2.481,5.622-2.094c0.017-5.49-0.001-10.98,0.009-16.47c0.498,0.733,1.035,1.451,1.707,2.037c1.428,1.294,3.204,2.117,4.671,3.358c1.266,1.078,2.364,2.414,2.925,3.996c0.411,1.131,0.495,2.374,0.256,3.552c-0.315,1.513-1.243,2.364-2.243,3.531c0.341-1.408,0.729-2.357,0.294-3.771c-0.29-0.98-0.925-1.831-1.716-2.466c-0.904-0.73-1.964-1.234-3.028-1.687c-0.014,3.627-0.001,7.255-0.006,10.883c0.056,1.252-0.583,2.45-1.498,3.273C259.76,268.381,257.712,268.958,255.869,268.484"/></svg>';
-	expandSVG = '<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="12.75px" height="25.54px" viewBox="0 0 12.75 25.54" enable-background="new 0 0 12.75 25.54" xml:space="preserve"><g><path fill="#E7E7E7" d="M0.539,0.843C0.242,0.379,0.45,0,1,0h2.546c0.55,0,1.248,0.375,1.551,0.834l7.274,11.025 c0.303,0.459,0.304,1.21,0.001,1.67L5.115,24.576c-0.302,0.46-1,0.836-1.549,0.836H1.051c-0.55,0-0.759-0.38-0.464-0.845 l6.991-11.028c0.295-0.465,0.293-1.224-0.003-1.688L0.539,0.843z"/></g></svg>';
-}
-jQuery(document).ready(function($) {
-	console.log("document loaded");
-	initSpeakPlayer($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
-});;function setListeners(){
-	if(player.audioElement){
-		var userSlideStarted = false, 
-		seekBar = player.controls.seekBar,
-		audioEl = player.audioElement;
-
-		//waits until metadata is loaded to scale seekBar to track duration
-		audioEl.addEventListener('loadedmetadata', function(){
-			seekBar.slider( "option", "max" , audioEl.duration * 10  );
-			value = 0;
-			if(typeof(audio_clock) === "undefined" || audio_clock == null){
-				audio_clock = startSeeking();
-			}
-		});
-		
-		audioEl.addEventListener("pause", function(){
-			song.isPlaying = false;
-			if(player.controls.playPause.hasClass('playing')){
-				setPlayPauseButton(false);
-				if(player.getCurrentlyPlayingSong()){
-					player.getCurrentlyPlayingSong().isPlaying = false;
-				}
-			}
-			clearInterval(audio_clock);
-		});
-		//listens to end of song and queues up the next in the list.
-		//currently, this queries the DOM and checks for the next element.
-		//in would probably be better to internally maintain the order of the playlist, but...later.
-		audioEl.addEventListener('ended', function(){
-			removeFromPlaylist(player.getCurrentlyPlayingSong());
-		});
-		audioEl.addEventListener("play", function(){
-			song.isPlaying = true;
-			if(!player.controls.playPause.hasClass('playing')){
-				setPlayPauseButton(true);
-			}
-			//clears previous seekbar intervals
-			if(typeof(audio_clock) !== "undefined"){
-				clearInterval(audio_clock);
-				audio_clock = null;
-			}
-			audio_clock = startSeeking();
-		});
-	}
-}
-
-//begins seeking. We avoid using the player callbacks, because they only execute every 250ms, 
-//making the seekBar seem grainy.
-function startSeeking(){
-	return setInterval(function(){
-		value += 1;
-		player.controls.seekBar.slider("value", value);
-
-	}, 100);
-};/** Define object models **/
-
-var SpeakPlayer = SpeakPlayer || {};
-SpeakPlayer.player = {
-	playerContainer : $('#playerContainer'),
-	libraryContainer : $('#libraryContainer'),
-	playlistContainer : $('#playlistContainer'),
-	currentlyPlayingArtistEl : '',
-	currentlyPlayingSongNameEl : '',
-	isPlaying : 'false',
-	isInitialized : 'false',
-	audioElement : '',
-	el : '',
-	controls : { 
-		volumeSlider : '',
-		el : '',
-		playPause : '',
-		seekBar : '',
-		mute : '',
-		stop : '',
-		playlist : '',
-		startTime : '',
-		endTime : ''
-	},
-	songs : [],
-	playlist : [],
-	clearCurrentlyPlayingSong : function(){
-		SpeakPlayer.player.audioElement.remove();
-        SpeakPlayer.player.currentlyPlayingArtistEl.text('');
-        SpeakPlayer.player.currentlyPlayingSongNameEl.text('');
-	},
-	setCurrentlyPlayingSong : function(song){
-        SpeakPlayer.player.currentlyPlayingArtistEl.text(song.artistName);
-        SpeakPlayer.player.currentlyPlayingSongNameEl.text(song.songName);
-		song.isPlaying = true;
-		song.isLoaded = true;
-
-	},
-	//gets currently playing song from playlist array
-	getCurrentlyPlayingSong : function(){
-		for (var i = player.playlist.length - 1; i >= 0; i--) {
-			if(player.playlist[i].isLoaded == true){
-				return player.playlist[i];
-			}
-		}
-	},
-	//gets a song object based on ID
-	getSong : function(id){
-		for (var i = player.songs.length - 1; i >= 0; i--) {
-			if(player.songs[i].id == id){
-				return player.songs[i];
-			}
-		}
-	}
-}
-
+;/**
+ * Created by vcimo5 on 9/30/14.
+ */
 //defines song model
-SpeakPlayer.Song = function(obj) {
-	this.isFeatured = false;
-	this.isPlaying = false,
-	this.isLoaded = false,
-	this.trackInfo = '',
-	this.artistName = 'artist',
-	this.albumName = 'album',
-	this.songName = 'track',
-	this.songUrl = '',
-	this.releaseDate = '',
-	this.albumArtUrl = '',
-	this.id = '-1',
-	this.genres = '',
-	this.removeFromPlaylist = function(){ removeFromPlaylist(this); },
-	this.addToPlaylist = function(playOrder){ addToPlaylist(this, playOrder); },
-	this.play = function(){ playPlaylistItem(); }
+SpeakPlayer.Song = {
+    isFeatured : false,
+    isPlaying : false,
+        isLoaded : false,
+        trackInfo : '',
+        artistName : 'artist',
+        albumName : 'album',
+        songName : 'track',
+        songUrl : '',
+        releaseDate : '',
+        albumArtUrl : '',
+        id : '-1',
+        genres : '',
 
-	// IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
-	for (var prop in obj) this[prop] = obj[prop];
-};/** Playlist Object Controls **/
+    create : function(obj) {
+        // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
+        for (var prop in obj) this[prop] = obj[prop];
+        return obj;
+    }
+};/**
+ * Created by vcimo5 on 9/30/14.
+ */
+SpeakPlayer.Seekbar = {
+    init : function(){
+        seekBar = SpeakPlayer.Player.controls.seekBar;
+        //stops seeking when use begins drag
+        seekBar.on("slidestart", function () {
+            clearInterval(audio_clock);
+        });
+        seekBar.on("slidechange", function (event, ui) {
+            //track time change on seekbar
+            SpeakPlayer.Player.controls.startTime.html(secondsToTime(ui.value / 10));
+        });
+        //resumes seeking when user ends drag
+        seekBar.on("slidestop", function (event, ui) {
 
+            value = seekBar.slider("value");
+            SpeakPlayer.Player.audioElement.currentTime = value / 10;
+            if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying) {
+                audio_clock = startSeeking();
+            }
+        });
+    },
+    secondsToTime : function(raw) {
+        var time = parseInt(raw, 10);
+        time = time < 0 ? 0 : time;
 
+        var minutes = Math.floor(time / 60);
+        var seconds = time % 60;
 
-//removes element from playlist by recreating array
-function removeFromPlaylist(song){
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+        return minutes + ":" + seconds;
+    }
+};/**
+ * Created by vcimo5 on 9/30/14.
+ */
+SpeakPlayer.Library = {
+    libraryContainer : "",
+    render: function (libraryContainer) {
+        this.libraryContainer = libraryContainer;
+        this.preparePlayerData();
+    },
 
-	if(song == player.getCurrentlyPlayingSong()){
-		var nextSong = getNextSong();
-		stopSong();
-		player.clearCurrentlyPlayingSong();
-		if(nextSong != null){
-			changeSong(nextSong);
-		}
-	}
-	$('#'+song.id).remove();
+    preparePlayerData: function () {
+        var data = {
+            action: 'get_songs',
+            security: MyAjax.security,
+            whatever: 1234
+        };
 
-	player.playlist = jQuery.grep(player.playlist, function(value){
-		return value != song;
-	});
-}
+        // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
+        $.post(MyAjax.ajaxurl, data, function (response) {
+            var obj = jQuery.parseJSON(response);
+            SpeakPlayer.Library.populatePlayer(obj);
+        });
+    },
 
-function stopSong(){
-	if(audio_clock !== "undefined" && audio_clock != null){
-		clearInterval(audio_clock);
-		player.controls.seekBar.slider("value", 0);
-	}
-	player.audioElement.pause();
-	player.audioElement.remove();
-	song.isLoaded = false;
-	song.isPlaying = false;
-}
-;/** Front-End Rendering **/
+    populatePlayer: function (obj) {
 
-//function renderSongs(){
+        $.each(obj, function (key, song) {
+            var songObj = SpeakPlayer.Song.create(song);
+            SpeakPlayer.Player.songs.push(songObj);
+        });
+        this.renderSongs();
+    },
+
+    renderSongs: function () {
+        htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
+        htmlFeature = "";
+        htmlSongs = "";
+        $.each(SpeakPlayer.Player.songs, function (key, song) {
+            if (!song.isFeatured) {
+                song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
+                htmlSongs += "<li id='" + song.id + "' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='songName'>" + song.songName + "</p><a class='artistName' href=''>" + song.artistName + "</a><p class='albumName'>" + song.albumName + "</p><p class='date'>" + song.releaseDate + "</p><p class='genre'>";
+
+                $.each(song.genres, function (key, genre) {
+                    htmlSongs += "<span>" + genre["name"] + "</span>";
+                });
+
+                htmlSongs += "</p></div></li>";
+            } else {
+                htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='" + song.albumArtUrl + "'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>" + song.songName + " <span class='by'>by</span></p><a class='artistName' href=''>" + song.artistName + "</a><p class='tag'>Categorized as ";
+                $.each(song.genres, function (key, genre) {
+                    htmlFeature += "<a href='#' class='genre'>" + genre["name"] + "</a>";
+                });
+                htmlFeature += ", released on <a class='album' href='#'>" + song.albumName + "</a>, " + song.releaseDate + "</p><p class='trackInfo'>" + song.trackInfo + "</p></div></div>";
+            }
+
+        });
+        htmlSongs += "</ul>";
+        this.libraryContainer.prepend(htmlFeature).append(htmlHeader + htmlSongs);
+    }
+    //function renderSongs(){
 //    htmlHeader = "<div class='libraryHeader'>Search</div>";
 //	htmlSongs = "<ul class='byAlbum'>";
 //    albumArtArray = [];
@@ -278,597 +185,425 @@ function stopSong(){
 
 //old style
 
-function renderSongs(){
-	htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
-	htmlFeature = "";
-	htmlSongs = "";
-	$.each( SpeakPlayer.player.songs, function( key, song ) {
-		if(!song.isFeatured){
-		song.albumArtUrl = song.albumArtUrl != null ? song.albumArtUrl : "";
-			htmlSongs += "<li id='" + song.id+"' class='song cf' ><div class='playOptions'><span class='expand'>+</span><a class='playNow' href='#'>Play Now</a><a class='playNext' href='#'>Play Next</a><a class='addToPlaylist' href='#'>Add To Playlist</a></div><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='songName'>"+song.songName+"</p><a class='artistName' href=''>"+song.artistName+"</a><p class='albumName'>"+song.albumName+"</p><p class='date'>"+song.releaseDate+"</p><p class='genre'>";
-
-			$.each(song.genres, function(key, genre){
-				htmlSongs += "<span>"+genre["name"]+"</span>";
-			});
-
-			htmlSongs+= "</p></div></li>";
-		} else{
-			htmlFeature += "<div class='featured-song cf'><div class='songImg'><img src='"+song.albumArtUrl+"'/></div><div class='songInfo'><p class='status'>Featured</p><p class='songName'>"+song.songName+" <span class='by'>by</span></p><a class='artistName' href=''>"+song.artistName+"</a><p class='tag'>Categorized as ";
-			$.each(song.genres, function(key, genre){
-				htmlFeature += "<a href='#' class='genre'>"+genre["name"]+"</a>";
-			});
-			htmlFeature += ", released on <a class='album' href='#'>"+song.albumName + "</a>, " + song.releaseDate+"</p><p class='trackInfo'>"+song.trackInfo+"</p></div></div>";
-		}
-
-	});
-	htmlSongs += "</ul>";
-	SpeakPlayer.player.libraryContainer.prepend(htmlFeature).append(htmlHeader+htmlSongs);
-}
-
-function renderPlaylist(){
-	var html = "<ul class='cf' id='playlistUl'></ul>";
-	SpeakPlayer.player.playlistContainer.append(html);
-	setupScrollSlider();
-}
-function renderPlayer(){	
-	var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a  href="#" class="playlist">'+playlistSVG+'</a><a href="#" class="volume">'+volumeSVG+'<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">'+prevSVG+'</a><a href="#" class="playPause">'+playSVG+'</a><a href="#" class="next">'+nextSVG+'</a></div></div>';
-
-	SpeakPlayer.player.playerContainer.append(html);
-	SpeakPlayer.player.isInitialized = true;
-	SpeakPlayer.player.el = SpeakPlayer.player.playerContainer.find('#player');
-	SpeakPlayer.player.controls.el = SpeakPlayer.player.playerContainer.find('#controls');
-	SpeakPlayer.player.controls.playPause = SpeakPlayer.player.playerContainer.find('.playPause');
-	SpeakPlayer.player.controls.stop = SpeakPlayer.player.playerContainer.find('.stop');
-	SpeakPlayer.player.controls.next = SpeakPlayer.player.playerContainer.find('.next');
-	SpeakPlayer.player.controls.playlist = SpeakPlayer.player.playerContainer.find('.playlist');
-	SpeakPlayer.player.controls.volumeSlider = SpeakPlayer.player.playerContainer.find('#volumeSlider').slider({
-		orientation: "vertical",
-		range: "min",
-		min: 0,
-		max: 100,
-		value: 60,
-	});
-	SpeakPlayer.player.controls.seekBar = SpeakPlayer.player.playerContainer.find('.seekBar').slider({
-		range: "min",
-		value: 0,
-		min: 1
-	});
-	SpeakPlayer.player.controls.startTime = SpeakPlayer.player.playerContainer.find('#startTime');
-	SpeakPlayer.player.controls.endTime = SpeakPlayer.player.playerContainer.find('#endTime');
-	SpeakPlayer.player.currentlyPlayingArtistEl = SpeakPlayer.player.playerContainer.find('.currentlyPlaying .artist');
-	SpeakPlayer.player.currentlyPlayingSongNameEl = SpeakPlayer.player.playerContainer.find('.currentlyPlaying .songName');
-	setListeners();
-	setupSeekbar();
-	setupVolumeSlider();
-	bindPlayer();
-}
-
-
-function setupVolumeSlider(){
-	var volumeSlider = SpeakPlayer.player.controls.volumeSlider;
-	volumeSlider.on('slide', function(event, ui){
-		if(audio != null){
-			console.log(ui.value);
-			audio.volume = ui.value/100;
-		}
-	});
-}
-//sets up listeners on seekbar. only needs to happen once since seekbars are single instance.
-function setupSeekbar(){
-	seekBar = SpeakPlayer.player.controls.seekBar;
-	//stops seeking when use begins drag
-	seekBar.on( "slidestart", function() {
-		clearInterval(audio_clock);	
-	});
-	seekBar.on( "slidechange", function( event, ui ) {
-		//track time change on seekbar
-		SpeakPlayer.player.controls.startTime.html(secondsToTime(ui.value/10));
-	} );
-	//resumes seeking when user ends drag
-	seekBar.on( "slidestop", function( event, ui ) {
-		
-		value = seekBar.slider("value");
-		SpeakPlayer.player.audioElement.currentTime = value/10;
-		if(SpeakPlayer.player.getCurrentlyPlayingSong().isPlaying){
-			audio_clock = startSeeking();
-		}
-	} );
-}
-
-function secondsToTime(raw){
-	var time = parseInt(raw,10);
-	time = time < 0 ? 0 : time;
-
-	var minutes = Math.floor(time / 60);
-	var seconds = time % 60;
-
-	seconds = seconds < 10 ? "0"+seconds : seconds;
-	return minutes+":"+seconds;
-}
-function setupScrollSlider(){
-	SpeakPlayer.player.playlistContainer.mCustomScrollbar({
-		axis:"x",
-		advanced:{
-			autoExpandHorizontalScroll:true
-		}
-	});
-};/** Click Bindings **/
-
-function bindPlayer(){
-	
-	SpeakPlayer.player.libraryContainer.on("mouseenter", "li .playOptions", function(event) {
-		$(this).transition({width: 'auto'}, 500, 'in-out');
-
-	});
-	SpeakPlayer.player.libraryContainer.on("mouseleave", "li .playOptions", function(event) {
-		$(this).transition({width: '25'}, 500, 'in-out');
-
-	});
-	//click handler for song objects in library
-	SpeakPlayer.player.libraryContainer.on( "click", "li .playNow" , function(event) {
-		var el = $(this);
-
-		if(player != null){
-			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
-			song.addToPlaylist(PLAY_NOW);
-		}
-		return false;
-	});
-
-    SpeakPlayer.player.libraryContainer.on("click", "#search label", function(event){
-        SpeakPlayer.player.libraryContainer.find('#input').toggleClass('focus');
-    });
-	SpeakPlayer.player.libraryContainer.on( "click", "li .playNext" , function(event) {
-		var el = $(this);
-
-		if(player != null){
-			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
-			song.addToPlaylist(PLAY_NEXT);
-		}
-		return false;
-	});
-
-	SpeakPlayer.player.libraryContainer.on( "click", "li .addToPlaylist" , function(event) {
-		var el = $(this);
-
-		if(player != null){
-			song = SpeakPlayer.player.getSong(el.closest('li').attr("id"));
-			song.addToPlaylist(ADD_TO_PLAYLIST);
-		}
-		return false;
-	});
-	//remove item click handler
-	SpeakPlayer.player.playlistContainer.on( "click",".remove", function() {	
-		el = $(this).parent();
-		song = SpeakPlayer.player.getSong(el.attr('id'));
-		song.removeFromPlaylist();
-		return false;
-	});
-
-	//play item click handler
-	SpeakPlayer.player.playlistContainer.on( "click", ".playOverlay", function(e) {
-		var el = $(this).closest('.song');
-		song = SpeakPlayer.player.getSong(el.attr('id'));
-		if(!song.isLoaded){
-			changeSong(song);
-		} else if(el.hasClass('playing')){
-			SpeakPlayer.player.audioElement.pause();
-			el.removeClass('playing');
-		} else{
-			SpeakPlayer.player.audioElement.play();
-			el.addClass('playing');
-		}
-		e.stopPropagation();
-		return false;
-	});
-
-	//pauses player
-	SpeakPlayer.player.playerContainer.on("click",".playPause", function(){
-		var button = $(this);
-		if(button.hasClass('playing')){
-			$('.song.playing').removeClass('playing');
-			SpeakPlayer.player.audioElement.pause();
-		} else{
-			$('#'+SpeakPlayer.player.getCurrentlyPlayingSong().id).addClass('playing');
-			SpeakPlayer.player.audioElement.play();
-		}
-
-	});
-
-	SpeakPlayer.player.playerContainer.on("click",".playlist", function(){
-		var wrap = $(".off-canvas-wrap");
-		if(SpeakPlayer.player.playlistContainer.hasClass("active")){
-			wrap.removeClass("playlistActive");
-			SpeakPlayer.player.playlistContainer.removeClass("active");
-		} else{
-			SpeakPlayer.player.playlistContainer.addClass("active");
-			wrap.addClass("playlistActive");
-
-		}
-	});
-
-	//pauses player
-	SpeakPlayer.player.playerContainer.on("click",".previous", function(){
-		seekPreviousSong();
-	});
-
-	//pauses player
-	SpeakPlayer.player.playerContainer.on("click",".next", function(){
-		seekNextSong();
-	});
-}
-
-
-
-/** Library Item Functionality **/
-PLAY_NOW = 1;
-PLAY_NEXT = 2;
-ADD_TO_PLAYLIST = 3;
-
-function addToPlaylist(song, playOrder){
-	//display playlist object on screen
-	SpeakPlayer.player.playerContainer.show();
-	var playerUl = SpeakPlayer.player.playlistContainer.find('ul');
-	var htmlPlaying = "<li id='"+song.id+"' class='playing current song'>";
-	var htmlNoPlay = "<li id='"+song.id+"' class='song'>";
-	var html = "<img src='"+song.albumArtUrl+"'/><div class='songInfo'><p class='songName'>"+ song.songName +
-	"</p><p class='artistName'>"+song.artistName+"</p></div><div class='playOverlay'><a href='#' class='play'>"+playSVG+"</a><a href='#' class='pause'>"+pauseSVG+"</a></div><a href='#' class='remove'></li>";
-
-	if(SpeakPlayer.player.playlistContainer.find('#'+song.id).length > 0){
-		return false;
-	} else if(jQuery.isEmptyObject(SpeakPlayer.player.playlist) || playOrder == PLAY_NOW){
-		playerUl.prepend(htmlPlaying+html);
-		changeSong(song);
-		SpeakPlayer.player.libraryContainer.addClass('playing');
-		playerUl.sortable().disableSelection();
-	}else if(playOrder == ADD_TO_PLAYLIST) {
-		playerUl.append(htmlNoPlay+html);
-	} else{
-		playerUl.find('.current').after(htmlNoPlay+html);
-	}
-	SpeakPlayer.player.playlist.push(song);	
-
-}
-
-
-
-/** Global Controls **/
-
-function setPlayPauseButton(isPlaying){
-	if(isPlaying){
-		SpeakPlayer.player.controls.playPause.addClass('playing');
-		SpeakPlayer.player.controls.playPause.html(pauseSVG);
-	} else{
-		SpeakPlayer.player.controls.playPause.removeClass('playing');
-		SpeakPlayer.player.controls.playPause.html(playSVG);
-	}
-}
-
-
-
-
-
-//begins playing specified song and removes current song.
-function changeSong(song) {
-
-	//removes current playing song
-	if(SpeakPlayer.player.audioElement){
-		SpeakPlayer.player.audioElement.pause();
-		SpeakPlayer.player.audioElement.remove();
-	}
-	//instantiate new audio element
-	audio = SpeakPlayer.player.audioElement = new Audio(song.songUrl);
-	audio.addEventListener("loadedmetadata", function(_event) {
-		var duration = audio.duration;
-		initAnalyzer(audio);
-		SpeakPlayer.player.controls.endTime.html(secondsToTime(duration));
-			    //TODO whatever
-			});
-	//resets playing flag on previously playing song in playlist array.
-	if(SpeakPlayer.player.getCurrentlyPlayingSong()){
-		SpeakPlayer.player.getCurrentlyPlayingSong().isPlaying = false;
-		SpeakPlayer.player.getCurrentlyPlayingSong().isLoaded = false;
-	}
-	//adds playing class to library and playlist items
-	$('.song').removeClass('playing current');
-	$('.song#' + song.id).each(function(){
-		$(this).addClass('playing current');
-	});
-	SpeakPlayer.player.setCurrentlyPlayingSong(song);
-	SpeakPlayer.player.isPlaying = true;
-	/****************/
-    audio.volume = 1.0;		//remove soon
-    audio.pause();
-    audio.load(); //suspends and restores all audio element
-    audio.play();
-
-    //sets up seekbar and song ended listeners. only called once since seekbar is single instance
-    setListeners();
-    
-    /****************/
-}
-
-function getPreviousSong(){
-	var endingSong = endSong();
-	if(endingSong){
-		prevSongId = SpeakPlayer.player.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
-		return SpeakPlayer.player.getSong(prevSongId)
-	} else{
-		return false;
-	}
-}
-
-function endSong(){
-	endingSong = SpeakPlayer.player.getCurrentlyPlayingSong();
-	if(typeof(endingSong) !== "undefined"){
-		return endingSong;
-	} else{
-		return false;
-	}
-	
-}
-
-function getNextSong(){
-	var endingSong = endSong();
-	if(endingSong){
-		nextSongId = SpeakPlayer.player.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
-		return SpeakPlayer.player.getSong(nextSongId);
-	} else{
-		return false;
-	}
-}
-
-function seekNextSong(){
-	var nextSong = getNextSong();
-	if(nextSong){		
-		SpeakPlayer.player.clearCurrentlyPlayingSong();
-		changeSong(nextSong);
-	}
-}
-function seekPreviousSong(){
-	var prevSong = getPreviousSong();
-	if(prevSong){
-		SpeakPlayer.player.clearCurrentlyPlayingSong();
-		changeSong(prevSong);
-	}
-}
-
-
-
-;(function() {
-  var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
-templates['featuredTrack.hbs'] = template({"compiler":[6,">= 2.0.0-beta.1"],"main":function(depth0,helpers,partials,data) {
-  var stack1, helper, functionType="function", helperMissing=helpers.helperMissing, escapeExpression=this.escapeExpression, lambda=this.lambda;
-  return "<div class='featured-song cf'>\n    <div class='songImg'><img src=\""
-    + escapeExpression(((helper = (helper = helpers.albumArtUrl || (depth0 != null ? depth0.albumArtUrl : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"albumArtUrl","hash":{},"data":data}) : helper)))
-    + "\"/></div>\n    <div class='songInfo'><p class='status'>Featured</p>\n        <p class='songName'>"
-    + escapeExpression(((helper = (helper = helpers.songName || (depth0 != null ? depth0.songName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"songName","hash":{},"data":data}) : helper)))
-    + " <span class='by'>by</span></p><a class='artistName' href=''>"
-    + escapeExpression(((helper = (helper = helpers.artistName || (depth0 != null ? depth0.artistName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"artistName","hash":{},"data":data}) : helper)))
-    + "</a>\n        <p class='tag'>Categorized as\n            <a href='#' class='genre'>"
-    + escapeExpression(((helper = (helper = helpers.genre || (depth0 != null ? depth0.genre : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"genre","hash":{},"data":data}) : helper)))
-    + "</a> released on <a class='album' href='#'>"
-    + escapeExpression(((helper = (helper = helpers.albumName || (depth0 != null ? depth0.albumName : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"albumName","hash":{},"data":data}) : helper)))
-    + "</a>\n            "
-    + escapeExpression(lambda(((stack1 = (depth0 != null ? depth0.song : depth0)) != null ? stack1.releaseDate : stack1), depth0))
-    + "</p>\n        <p class='trackInfo'>"
-    + escapeExpression(((helper = (helper = helpers.trackInfo || (depth0 != null ? depth0.trackInfo : depth0)) != null ? helper : helperMissing),(typeof helper === functionType ? helper.call(depth0, {"name":"trackInfo","hash":{},"data":data}) : helper)))
-    + "</p></div>\n</div>\n";
-},"useData":true});
-})();;
-/*
-
-  Music is by The XX
-  @see http://thexx.info
-
-  This is best viewed in Chrome since there is a bug in Safari
-  when using getByteFrequencyData with MediaElementAudioSource
-
-  @see http://goo.gl/6WLx1
+};;/**
+ * Created by vcimo5 on 9/30/14.
  */
 
-  var ALPHA, AudioAnalyser, COLORS, MP3_PATH, NUM_BANDS, NUM_PARTICLES, Particle, SCALE, SIZE, SMOOTHING, SPEED, SPIN;
+SpeakPlayer.Volumeslider = {
+    init : function(){
+           var volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
+            volumeSlider.on('slide', function (event, ui) {
+                if (audio != null) {
+                    console.log(ui.value);
+                    audio.volume = ui.value / 100;
+                }
+            });
+        }
 
-  NUM_PARTICLES = 150;
-
-  NUM_BANDS = 128;
-
-  SMOOTHING = 0.5;
-
-
-  SCALE = {
-    MIN: 5.0,
-    MAX: 80.0
-  };
-
-  SPEED = {
-    MIN: 0.2,
-    MAX: 1.0
-  };
-
-  ALPHA = {
-    MIN: 0.8,
-    MAX: 0.9
-  };
-
-  SPIN = {
-    MIN: 0.001,
-    MAX: 0.005
-  };
-
-  SIZE = {
-    MIN: 0.5,
-    MAX: 1.25
-  };
-
-  COLORS = ['#69D2E7', '#1B676B', '#BEF202', '#EBE54D', '#00CDAC', '#1693A5', '#F9D423', '#FF4E50', '#E7204E', '#0CCABA', '#FF006F'];
-
-  AudioAnalyser = (function() {
-    AudioAnalyser.AudioContext = self.AudioContext || self.webkitAudioContext;
-
-    AudioAnalyser.enabled = AudioAnalyser.AudioContext != null;
-
-    function AudioAnalyser(audio, numBands, smoothing) {
-      var src;
-      this.audio = audio != null ? audio : new Audio();
-      this.numBands = numBands != null ? numBands : 256;
-      this.smoothing = smoothing != null ? smoothing : 0.3;
-      this.context = new AudioAnalyser.AudioContext();
-      this.jsNode = this.context.createScriptProcessor(2048, 1, 1);
-      this.analyser = this.context.createAnalyser();
-      this.analyser.smoothingTimeConstant = this.smoothing;
-      this.analyser.fftSize = this.numBands * 2;
-      this.bands = new Uint8Array(this.analyser.frequencyBinCount);
-      this.audio.addEventListener('canplay', (function(_this) {
-        return function() {
-          _this.source = _this.context.createMediaElementSource(_this.audio);
-          _this.source.connect(_this.analyser);
-          _this.analyser.connect(_this.jsNode);
-          _this.jsNode.connect(_this.context.destination);
-          _this.source.connect(_this.context.destination);
-          return _this.jsNode.onaudioprocess = function() {
-            _this.analyser.getByteFrequencyData(_this.bands);
-            if (!_this.audio.paused) {
-              return typeof _this.onUpdate === "function" ? _this.onUpdate(_this.bands) : void 0;
-            }
-          };
-        };
-      })(this));
-    }
-
-    AudioAnalyser.prototype.start = function() {
-      return this.audio.play();
-    };
-
-    AudioAnalyser.prototype.stop = function() {
-      return this.audio.pause();
-    };
-
-    return AudioAnalyser;
-
-  })();
-
-  Particle = (function() {
-    function Particle(x, y) {
-      this.x = x != null ? x : 0;
-      this.y = y != null ? y : 0;
-      this.reset();
-    }
-
-    Particle.prototype.reset = function() {
-      this.level = 1 + floor(random(4));
-      this.scale = random(SCALE.MIN, SCALE.MAX);
-      this.alpha = random(ALPHA.MIN, ALPHA.MAX);
-      this.speed = random(SPEED.MIN, SPEED.MAX);
-      this.color = random(COLORS);
-      this.size = random(SIZE.MIN, SIZE.MAX);
-      this.spin = random(SPIN.MAX, SPIN.MAX);
-      this.band = floor(random(NUM_BANDS));
-      if (random() < 0.5) {
-        this.spin = -this.spin;
-      }
-      this.smoothedScale = 0.0;
-      this.smoothedAlpha = 0.0;
-      this.decayScale = 0.0;
-      this.decayAlpha = 0.0;
-      this.rotation = random(TWO_PI);
-      return this.energy = 0.0;
-    };
-
-    Particle.prototype.move = function() {
-      this.rotation += this.spin;
-      return this.y -= this.speed * this.level;
-    };
-
-    Particle.prototype.draw = function(ctx) {
-      var alpha, power, scale;
-      power = exp(this.energy);
-      scale = this.scale * power;
-      alpha = this.alpha * this.energy * 1.5;
-      this.decayScale = max(this.decayScale, scale);
-      this.decayAlpha = max(this.decayAlpha, alpha);
-      this.smoothedScale += (this.decayScale - this.smoothedScale) * 0.3;
-      this.smoothedAlpha += (this.decayAlpha - this.smoothedAlpha) * 0.3;
-      this.decayScale *= 0.985;
-      this.decayAlpha *= 0.975;
-      ctx.save();
-      ctx.beginPath();
-      ctx.translate(this.x + cos(this.rotation * this.speed) * 250, this.y);
-      ctx.rotate(this.rotation);
-      ctx.scale(this.smoothedScale * this.level, this.smoothedScale * this.level);
-      ctx.moveTo(this.size * 0.5, 0);
-      ctx.lineTo(this.size * -0.5, 0);
-      ctx.lineWidth = 1;
-      ctx.lineCap = 'round';
-      ctx.globalAlpha = this.smoothedAlpha / this.level;
-      ctx.strokeStyle = this.color;
-      ctx.stroke();
-      return ctx.restore();
-    };
-
-    return Particle;
-
-  })();
-
-function initVisualizer(){
-  visualizer = Sketch.create({
-    particles: [],
-    setup: function() {
-      var analyser, error, i, intro, particle, warning, x, y, _i, _ref;
-      for (i = _i = 0, _ref = NUM_PARTICLES - 1; _i <= _ref; i = _i += 1) {
-        x = random(this.width);
-        y = random(this.height * 2);
-        particle = new Particle(x, y);
-        particle.energy = random(particle.band / 256);
-        this.particles.push(particle);
-      }
+};/**
+ * Created by vcimo5 on 9/30/14.
+ */
+SpeakPlayer.Playlist = {
+    playlist: [],
+    playlistContainer: "",
+    render: function (playlistContainer) {
+        this.playlistContainer = playlistContainer;
+        var html = "<ul class='cf' id='playlistUl'></ul>";
+        this.playlistContainer.append(html);
+        this.setupScrollSlider();
     },
-    draw: function() {
-      var particle, _i, _len, _ref, _results;
-      this.globalCompositeOperation = 'lighter';
-      _ref = this.particles;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        particle = _ref[_i];
-        if (particle.y < -particle.size * particle.level * particle.scale * 2) {
-          particle.reset();
-          particle.x = random(this.width);
-          particle.y = this.height + particle.size * particle.scale * particle.level;
+
+    //removes element from playlist by recreating array
+    removeFromPlaylist: function (song) {
+
+        if (song == SpeakPlayer.Player.getCurrentlyPlayingSong()) {
+            var nextSong = SpeakPlayer.Player.getNextSong();
+            stopSong();
+            SpeakPlayer.Player.clearCurrentlyPlayingSong();
+            if (nextSong != null) {
+                SpeakPlayer.Player.changeSong(nextSong);
+            }
         }
-        particle.move();
-        _results.push(particle.draw(this));
-      }
-      return _results;
+        $('#' + song.id).remove();
+
+        this.playlist = jQuery.grep(SpeakPlayer.Player.playlist, function (value) {
+            return value != song;
+        });
+    },
+    addToPlaylist: function (song, playOrder) {
+        //display playlist object on screen
+        SpeakPlayer.Player.playerContainer.show();
+        var playerUl = this.playlistContainer.find('ul');
+        var htmlPlaying = "<li id='" + song.id + "' class='playing current song'>";
+        var htmlNoPlay = "<li id='" + song.id + "' class='song'>";
+        var html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
+            "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + playSVG + "</a><a href='#' class='pause'>" + pauseSVG + "</a></div><a href='#' class='remove'></li>";
+
+        if (this.playlistContainer.find('#' + song.id).length > 0) {
+            return false;
+        } else if (jQuery.isEmptyObject(SpeakPlayer.Player.playlist) || playOrder == PLAY_NOW) {
+            playerUl.prepend(htmlPlaying + html);
+            SpeakPlayer.Player.changeSong(song);
+            SpeakPlayer.Library.libraryContainer.addClass('playing');
+            playerUl.sortable().disableSelection();
+        } else if (playOrder == ADD_TO_PLAYLIST) {
+            playerUl.append(htmlNoPlay + html);
+        } else {
+            playerUl.find('.current').after(htmlNoPlay + html);
+        }
+        this.playlist.push(song);
+
+    },
+
+    setupScrollSlider: function () {
+        this.playlistContainer.mCustomScrollbar({
+            axis: "x",
+            advanced: {
+                autoExpandHorizontalScroll: true
+            }
+        });
     }
-  });
 }
 
-function initAnalyzer(audioEl){
-   if (AudioAnalyser.enabled) {
-        try {
-          analyser = new AudioAnalyser(audioEl, NUM_BANDS, SMOOTHING);
-          analyser.onUpdate = (function(_this) {
-            return function(bands) {
-              var _j, _len, _ref1, _results;
-              _ref1 = visualizer.particles;
-              _results = [];
-              for (_j = 0, _len = _ref1.length; _j < _len; _j++) {
-                particle = _ref1[_j];
-                _results.push(particle.energy = bands[particle.band] / 256);
-              }
-              return _results;
-            };
-          })(this);
-          analyser.start();
-          if (/Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)) {
-            warning = document.getElementById('warning2');
-            return warning.style.display = 'block';
-          }
-        } catch (_error) {
-          error = _error;
+;/**
+ * Created by vcimo5 on 9/30/14.
+ */
+SpeakPlayer.Player = {
+    playerContainer: $('#playerContainer'),
+    currentlyPlayingArtistEl: '',
+    currentlyPlayingSongNameEl: '',
+    isPlaying: 'false',
+    isInitialized: 'false',
+    audioElement: '',
+    el: '',
+    controls: {
+        volumeSlider: '',
+        el: '',
+        playPause: '',
+        seekBar: '',
+        mute: '',
+        stop: '',
+        playlist: '',
+        startTime: '',
+        endTime: ''
+    },
+    songs: [],
+    PLAY_NOW : 1,
+    PLAY_NEXT : 2,
+    ADD_TO_PLAYLIST : 3,
+
+    render: function (playerContainer) {
+        this.playerContainer = playerContainer;
+        var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a  href="#" class="playlist">' + playlistSVG + '</a><a href="#" class="volume">' + volumeSVG + '<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">' + prevSVG + '</a><a href="#" class="playPause">' + playSVG + '</a><a href="#" class="next">' + nextSVG + '</a></div></div>';
+        this.playerContainer.append(html);
+        this.isInitialized = true;
+        this.el = this.playerContainer.find('#player');
+        this.controls.el = this.playerContainer.find('#controls');
+        this.controls.playPause = this.playerContainer.find('.playPause');
+        this.controls.stop = this.playerContainer.find('.stop');
+        this.controls.next = this.playerContainer.find('.next');
+        this.controls.playlist = this.playerContainer.find('.playlist');
+        this.controls.volumeSlider = this.playerContainer.find('#volumeSlider').slider({
+            orientation: "vertical",
+            range: "min",
+            min: 0,
+            max: 100,
+            value: 60
+        });
+        this.controls.seekBar = this.playerContainer.find('.seekBar').slider({
+            range: "min",
+            value: 0,
+            min: 1
+        });
+        this.controls.startTime = this.playerContainer.find('#startTime');
+        this.controls.endTime = this.playerContainer.find('#endTime');
+        this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
+        this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
+
+        SpeakPlayer.Seekbar.init();
+        SpeakPlayer.Volumeslider.init()
+        this.setListeners();
+        this.bindPlayer();
+
+    },
+    bindPlayer: function () {
+
+        SpeakPlayer.Library.libraryContainer.on("mouseenter", "li .playOptions", function (event) {
+            $(this).transition({width: 'auto'}, 500, 'in-out');
+
+        });
+        SpeakPlayer.Library.libraryContainer.on("mouseleave", "li .playOptions", function (event) {
+            $(this).transition({width: '25'}, 500, 'in-out');
+
+        });
+        //click handler for song objects in library
+        SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
+            var el = $(this);
+
+            if (player != null) {
+                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NOW);
+            }
+            return false;
+        });
+
+        SpeakPlayer.Library.libraryContainer.on("click", "#search label", function (event) {
+            SpeakPlayer.Library.libraryContainer.find('#input').toggleClass('focus');
+        });
+        SpeakPlayer.Library.libraryContainer.on("click", "li .playNext", function (event) {
+            var el = $(this);
+
+            if (player != null) {
+                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, this.PLAY_NEXT);
+            }
+            return false;
+        });
+
+        SpeakPlayer.Library.libraryContainer.on("click", "li .addToPlaylist", function (event) {
+            var el = $(this);
+
+            if (player != null) {
+                song = SpeakPlayer.Player.getSong(el.closest('li').attr("id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, this.ADD_TO_PLAYLIST);
+            }
+            return false;
+        });
+        //remove item click handler
+        SpeakPlayer.Playlist.playlistContainer.on("click", ".remove", function () {
+            el = $(this).parent();
+            song = SpeakPlayer.Player.getSong(el.attr('id'));
+            SpeakPlayer.Playlist.removeFromPlaylist();
+            return false;
+        });
+
+        //play item click handler
+        SpeakPlayer.Playlist.playlistContainer.on("click", ".playOverlay", function (e) {
+            var el = $(this).closest('.song');
+            song = SpeakPlayer.Player.getSong(el.attr('id'));
+            if (!song.isLoaded) {
+                this.changeSong(song);
+            } else if (el.hasClass('playing')) {
+                SpeakPlayer.Player.audioElement.pause();
+                el.removeClass('playing');
+            } else {
+                SpeakPlayer.Player.audioElement.play();
+                el.addClass('playing');
+            }
+            e.stopPropagation();
+            return false;
+        });
+
+        //pauses player
+        SpeakPlayer.Player.playerContainer.on("click", ".playPause", function () {
+            var button = $(this);
+            if (button.hasClass('playing')) {
+                $('.song.playing').removeClass('playing');
+                SpeakPlayer.Player.audioElement.pause();
+            } else {
+                $('#' + SpeakPlayer.Player.getCurrentlyPlayingSong().id).addClass('playing');
+                SpeakPlayer.Player.audioElement.play();
+            }
+
+        });
+
+        SpeakPlayer.Player.playerContainer.on("click", ".playlist", function () {
+            var wrap = $(".off-canvas-wrap");
+            if (SpeakPlayer.Playlist.playlistContainer.hasClass("active")) {
+                wrap.removeClass("playlistActive");
+                SpeakPlayer.Playlist.playlistContainer.removeClass("active");
+            } else {
+                SpeakPlayer.Playlist.playlistContainer.addClass("active");
+                wrap.addClass("playlistActive");
+
+            }
+        });
+
+        //pauses player
+        SpeakPlayer.Player.playerContainer.on("click", ".previous", function () {
+            seekPreviousSong();
+        });
+
+        //pauses player
+        SpeakPlayer.Player.playerContainer.on("click", ".next", function () {
+            seekNextSong();
+        });
+    },
+
+    setListeners: function () {
+        if (player.audioElement) {
+            var userSlideStarted = false,
+                seekBar = player.controls.seekBar,
+                audioEl = player.audioElement;
+
+            //waits until metadata is loaded to scale seekBar to track duration
+            audioEl.addEventListener('loadedmetadata', function () {
+                seekBar.slider("option", "max", audioEl.duration * 10);
+                value = 0;
+                if (typeof(audio_clock) === "undefined" || audio_clock == null) {
+                    audio_clock = startSeeking();
+                }
+            });
+
+            audioEl.addEventListener("pause", function () {
+                song.isPlaying = false;
+                if (player.controls.playPause.hasClass('playing')) {
+                    setPlayPauseButton(false);
+                    if (player.getCurrentlyPlayingSong()) {
+                        player.getCurrentlyPlayingSong().isPlaying = false;
+                    }
+                }
+                clearInterval(audio_clock);
+            });
+            //listens to end of song and queues up the next in the list.
+            //currently, this queries the DOM and checks for the next element.
+            //in would probably be better to internally maintain the order of the playlist, but...later.
+            audioEl.addEventListener('ended', function () {
+                removeFromPlaylist(player.getCurrentlyPlayingSong());
+            });
+            audioEl.addEventListener("play", function () {
+                song.isPlaying = true;
+                if (!player.controls.playPause.hasClass('playing')) {
+                    setPlayPauseButton(true);
+                }
+                //clears previous seekbar intervals
+                if (typeof(audio_clock) !== "undefined") {
+                    clearInterval(audio_clock);
+                    audio_clock = null;
+                }
+                audio_clock = startSeeking();
+            });
         }
-      } else {
-        warning = document.getElementById('warning1');
-        return warning.style.display = 'block';
-      }
-}
+    },
+    stopSong: function () {
+        if (audio_clock !== "undefined" && audio_clock != null) {
+            clearInterval(audio_clock);
+            player.controls.seekBar.slider("value", 0);
+        }
+        player.audioElement.pause();
+        player.audioElement.remove();
+        song.isLoaded = false;
+        song.isPlaying = false;
+    },
+    clearCurrentlyPlayingSong: function () {
+        this.audioElement.remove();
+        this.currentlyPlayingArtistEl.text('');
+        this.currentlyPlayingSongNameEl.text('');
+    },
+    setCurrentlyPlayingSong: function (song) {
+        this.currentlyPlayingArtistEl.text(song.artistName);
+        this.currentlyPlayingSongNameEl.text(song.songName);
+        song.isPlaying = true;
+        song.isLoaded = true;
+
+    },
+    //gets currently playing song from playlist array
+    getCurrentlyPlayingSong: function () {
+        for (var i = SpeakPlayer.Playlist.playlist.length - 1; i >= 0; i--) {
+            if (SpeakPlayer.Playlist.playlist[i].isLoaded == true) {
+                return player.playlist[i];
+            }
+        }
+    },
+    //gets a song object based on ID
+    getSong: function (id) {
+        for (var i = this.songs.length - 1; i >= 0; i--) {
+            if (this.songs[i].id == id) {
+                return this.songs[i];
+            }
+        }
+    },
+    setPlayPauseButton: function (isPlaying) {
+        if (isPlaying) {
+            this.controls.playPause.addClass('playing');
+            this.controls.playPause.html(pauseSVG);
+        } else {
+            this.controls.playPause.removeClass('playing');
+            this.controls.playPause.html(playSVG);
+        }
+    },
+
+
+    getPreviousSong: function () {
+        var endingSong = endSong();
+        if (endingSong) {
+            prevSongId = this.playlistContainer.find('#' + endingSong.id).prev('li').attr('id');
+            return this.getSong(prevSongId)
+        } else {
+            return false;
+        }
+    },
+
+    endSong: function () {
+        endingSong = this.getCurrentlyPlayingSong();
+        if (typeof(endingSong) !== "undefined") {
+            return endingSong;
+        } else {
+            return false;
+        }
+
+    },
+
+    getNextSong: function () {
+        var endingSong = endSong();
+        if (endingSong) {
+            nextSongId = this.playlistContainer.find('#' + endingSong.id).next('li').attr('id');
+            return this.getSong(nextSongId);
+        } else {
+            return false;
+        }
+    },
+
+    seekNextSong: function () {
+        var nextSong = getNextSong();
+        if (nextSong) {
+            this.clearCurrentlyPlayingSong();
+            this.changeSong(nextSong);
+        }
+    },
+    seekPreviousSong: function () {
+        var prevSong = getPreviousSong();
+        if (prevSong) {
+            this.clearCurrentlyPlayingSong();
+            this.changeSong(prevSong);
+        }
+    },
+    //begins playing specified song and removes current song.
+    changeSong: function (song) {
+
+        //removes current playing song
+        if (this.audioElement) {
+            this.audioElement.pause();
+            this.audioElement.remove();
+        }
+        //instantiate new audio element
+        audio = this.audioElement = new Audio(song.songUrl);
+        audio.addEventListener("loadedmetadata", function (_event) {
+            var duration = audio.duration;
+            //SpeakPlayer.Visualizer.initAnalyzer(audio);
+            SpeakPlayer.Player.controls.endTime.html(SpeakPlayer.Seekbar.secondsToTime(duration));
+        });
+        //resets playing flag on previously playing song in playlist array.
+        if (SpeakPlayer.Player.getCurrentlyPlayingSong()) {
+            SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying = false;
+            SpeakPlayer.Player.getCurrentlyPlayingSong().isLoaded = false;
+        }
+        //adds playing class to library and playlist items
+        $('.song').removeClass('playing current');
+        $('.song#' + song.id).each(function () {
+            $(this).addClass('playing current');
+        });
+        SpeakPlayer.Player.setCurrentlyPlayingSong(song);
+        SpeakPlayer.Player.isPlaying = true;
+        /****************/
+        audio.volume = 1.0;		//remove soon
+        audio.pause();
+        audio.load(); //suspends and restores all audio element
+        audio.play();
+
+        //sets up seekbar and song ended listeners. only called once since seekbar is single instance
+        this.setListeners();
+
+        /****************/
+    }
+};

@@ -49,7 +49,14 @@ module.exports = function(grunt) {
         src: [
         'js/foundation/js/foundation.min.js',
         'js/init-foundation.js',
-        'js/speakplayer/*.js'
+        'js/speakplayer/SpeakPlayer.js',
+            'js/speakplayer/SpeakPlayer.Song.js',
+            'js/speakplayer/SpeakPlayer.Seekbar.js',
+            'js/speakplayer/SpeakPlayer.Library.js',
+            'js/speakplayer/SpeakPlayer.Volumeslider.js',
+            'js/speakplayer/SpeakPlayer.Playlist.js',
+            'js/speakplayer/SpeakPlayer.Player.js',
+
         ],
 
         dest: 'js/app.js',

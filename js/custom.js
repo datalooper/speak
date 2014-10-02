@@ -5,7 +5,7 @@ body = $('body');
 
 $(document).on('ajax-navigation', function () {
     if (checkPage() == "music") {
-        initSpeakPlayer($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
+        SpeakPlayer.init($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
     }
     checkPage();
     checkHome();
