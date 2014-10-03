@@ -316,6 +316,44 @@ canvas.sketch {
       height: 35px;
       overflow: hidden;
 
+
+      &.current{
+        background:#F7E19E;
+        .playOptions{
+          .addToPlaylist{
+            display:none;
+          }
+          .removeFromPlaylist{
+            display:block;
+          }
+        }
+      }
+      &.inPlaylist{
+        .playOptions{
+          .addToPlaylist{
+            display: none;
+          }
+          .removeFromPlaylist{
+            display: block;
+          }
+        }
+      }
+      &.playing {
+        background:#9FC78F;
+        .playOptions {
+          .playNext, .playLast, .playNow, .addToPlaylist {
+            display: none;
+          }
+         .removeFromPlaylist, .pause{
+            display: block;
+          }
+
+          &:hover {
+
+
+          }
+        }
+      }
       .songImg {
         width: 6%;
         float: left;
@@ -340,10 +378,11 @@ canvas.sketch {
           &.pause, &.removeFromPlaylist{
             display:none;
           }
-          svg {
+          svg{
             margin: 0px 5px;
             opacity: .5;
             display: block;
+            fill:$dark-grey;
             width: 15px;
             height: 15px;
             position: relative;
@@ -361,28 +400,8 @@ canvas.sketch {
         }
 
       }
-      &.current{
-        .playOptions{
-          .addToPlaylist{
-            display:none;
-          }
-        }
-      }
-      &.playing {
-        .playOptions {
-          .playNext, .playLast, .playNow, .addToPlaylist {
-            display: none;
-          }
-          .pause{
-            display: block;
-          }
-
-          &:hover {
 
 
-          }
-        }
-      }
 
       p, a {
         padding-top: 3px;

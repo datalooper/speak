@@ -3,11 +3,12 @@
  */
 
 SpeakPlayer.Volumeslider = {
-    init : function(){
-           var volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
-            volumeSlider.on('slide', function (event, ui) {
+    volumeSlider : '',
+    prevVolume : '',
+init : function(){
+            this.volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
+            this.volumeSlider.on('slide', function (event, ui) {
                 if (audio != null) {
-                    console.log(ui.value);
                     audio.volume = ui.value / 100;
                 }
             });

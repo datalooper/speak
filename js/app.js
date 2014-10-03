@@ -216,11 +216,12 @@ SpeakPlayer.Library = {
  */
 
 SpeakPlayer.Volumeslider = {
-    init : function(){
-           var volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
-            volumeSlider.on('slide', function (event, ui) {
+    volumeSlider : '',
+    prevVolume : '',
+init : function(){
+            this.volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
+            this.volumeSlider.on('slide', function (event, ui) {
                 if (audio != null) {
-                    console.log(ui.value);
                     audio.volume = ui.value / 100;
                 }
             });
@@ -243,6 +244,7 @@ SpeakPlayer.Playlist = {
     removeFromPlaylist: function (song) {
 
         if (song == SpeakPlayer.Player.getCurrentlyPlayingSong()) {
+
             var nextSong = SpeakPlayer.Player.getNextSong();
             SpeakPlayer.Player.stopSong();
             SpeakPlayer.Player.clearCurrentlyPlayingSong();
@@ -250,33 +252,38 @@ SpeakPlayer.Playlist = {
                 SpeakPlayer.Player.changeSong(nextSong);
             }
         }
-        $('.' + song.id).remove();
 
-        this.playlist = jQuery.grep(SpeakPlayer.Player.playlist, function (value) {
+        this.playlist = jQuery.grep(this.playlist, function (value) {
             return value != song;
         });
+        SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + song.id+']').remove();
+        SpeakPlayer.Library.libraryContainer.find('[data-song-id=' + song.id+']').removeClass('current playing inPlaylist');
+
     },
     addToPlaylist: function (song, playOrder) {
         //display playlist object on screen
         SpeakPlayer.Player.playerContainer.show();
-        var playerUl = this.playlistContainer.find('ul');
-        var htmlPlaying = "<li data-song-id='" + song.id + "' class='playing current song'>";
-        var htmlNoPlay = "<li data-song-id='" + song.id + "' class='song'>";
+        var playerUl = this.playlistContainer.find('ul'),
+            htmlPlaying = "<li data-song-id='" + song.id + "' class='playing current song'>",
+            htmlNoPlay = "<li data-song-id='" + song.id + "' class='song'>",
+            librarySong = SpeakPlayer.Library.libraryContainer.find('[data-song-id=' + song.id + ']');
+
         var html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
             "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + playSVG + "</a><a href='#' class='pause'>" + pauseSVG + "</a></div><a href='#' class='remove'></li>";
-
-        if (this.playlistContainer.find('.' + song.id).length > 0) {
+        if (this.playlistContainer.find('[data-song-id=' + song.id + ']').length > 0) {
             return false;
         } else if (jQuery.isEmptyObject(SpeakPlayer.Playlist.playlist) || playOrder == SpeakPlayer.Player.PLAY_NOW) {
             playerUl.prepend(htmlPlaying + html);
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
+            SpeakPlayer.Playlist.playlistContainer.addClass('active');
             playerUl.sortable().disableSelection();
         } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {
             playerUl.append(htmlNoPlay + html);
         } else {
             playerUl.find('.current').after(htmlNoPlay + html);
         }
+        librarySong.addClass('inPlaylist');
         this.playlist.push(song);
 
     },
@@ -309,7 +316,7 @@ SpeakPlayer.Player = {
         el: '',
         playPause: '',
         seekBar: '',
-        mute: '',
+        volume: '',
         stop: '',
         playlist: '',
         startTime: '',
@@ -335,7 +342,8 @@ SpeakPlayer.Player = {
         this.initControls();
         this.setListeners();
         this.bindPlayer();
-
+        //setup tooltips
+        $(document).tooltip();
         SpeakPlayer.Seekbar.init();
         SpeakPlayer.Volumeslider.init();
 
@@ -348,7 +356,9 @@ SpeakPlayer.Player = {
         this.controls.stop = this.playerContainer.find('.stop');
         this.controls.next = this.playerContainer.find('.next');
         this.controls.playlist = this.playerContainer.find('.playlist');
-        this.controls.volumeSlider = this.playerContainer.find('#volumeSlider').slider({
+        this.controls.volume = this.playerContainer.find('.volume');
+
+            this.controls.volumeSlider = this.playerContainer.find('#volumeSlider').slider({
             orientation: "vertical",
             range: "min",
             min: 0,
@@ -367,12 +377,35 @@ SpeakPlayer.Player = {
 
     bindPlayer: function () {
 
+
         //click handler for song objects in library
-        SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
+        SpeakPlayer.Library.libraryContainer.on("click", "li .removeFromPlaylist", function (event) {
             var el = $(this);
 
             if (player != null) {
                 song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.removeFromPlaylist(song);
+            }
+            return false;
+        });
+        //remove item click handler
+        SpeakPlayer.Library.libraryContainer.on("click", ".pause", function () {
+            el = $(this).parent();
+            var song = SpeakPlayer.Player.getSong(el.data('song-id'));
+            SpeakPlayer.Player.audioElement.pause(song);
+            return false;
+        });
+        //click handler for song objects in library
+        SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
+            var el = $(this), song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id")),
+                playlistEl = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id='+song.id+']');
+            if(playlistEl.length > 0){
+                if(playlistEl.hasClass('current')){
+                    SpeakPlayer.Player.audioElement.play();
+                } else{
+                    SpeakPlayer.Player.changeSong(song);
+                }
+            } else {
                 SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NOW);
             }
             return false;
@@ -403,7 +436,7 @@ SpeakPlayer.Player = {
         //remove item click handler
         SpeakPlayer.Playlist.playlistContainer.on("click", ".remove", function () {
             el = $(this).parent();
-            var song = SpeakPlayer.Player.getSong(el.attr('id'));
+            var song = SpeakPlayer.Player.getSong(el.data('song-id'));
             SpeakPlayer.Playlist.removeFromPlaylist(song);
             return false;
         });
@@ -428,16 +461,29 @@ SpeakPlayer.Player = {
         //pauses player
         SpeakPlayer.Player.playerContainer.on("click", ".playPause", function () {
             var button = $(this);
-            if (button.hasClass('playing')) {
-                $('.song.playing').removeClass('playing');
-                SpeakPlayer.Player.audioElement.pause();
-            } else {
-                $('#' + SpeakPlayer.Player.getCurrentlyPlayingSong().id).addClass('playing');
-                SpeakPlayer.Player.audioElement.play();
+
+            if(SpeakPlayer.Player.audioElement != null) {
+                if (button.hasClass('playing')) {
+                    SpeakPlayer.Player.audioElement.pause();
+                } else {
+                    SpeakPlayer.Player.audioElement.play();
+                }
             }
 
         });
+        SpeakPlayer.Player.playerContainer.on("click",".volume", function(){
+            if(SpeakPlayer.Player.controls.volume.hasClass('muted')) {
+                SpeakPlayer.Player.audioElement.volume = SpeakPlayer.Volumeslider.prevVolume/100;
+                SpeakPlayer.Volumeslider.volumeSlider.slider("value", SpeakPlayer.Volumeslider.prevVolume);
+                SpeakPlayer.Player.controls.volume.removeClass('muted');
 
+            }else{
+                SpeakPlayer.Volumeslider.prevVolume = SpeakPlayer.Volumeslider.volumeSlider.slider("value");
+                SpeakPlayer.Volumeslider.volumeSlider.slider("value", 0);
+                SpeakPlayer.Player.audioElement.volume = 0;
+                SpeakPlayer.Player.controls.volume.addClass('muted');
+            }
+        });
         SpeakPlayer.Player.playerContainer.on("click", ".playlist", function () {
             var wrap = $(".off-canvas-wrap");
             if (SpeakPlayer.Playlist.playlistContainer.hasClass("active")) {
@@ -477,12 +523,12 @@ SpeakPlayer.Player = {
             });
 
             audioEl.addEventListener("pause", function () {
-                song.isPlaying = false;
+                if(SpeakPlayer.Playlist.playlist.length > 0){
+                    SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying = false;
+                }
+                $('.song.playing').removeClass('playing');
                 if (SpeakPlayer.Player.controls.playPause.hasClass('playing')) {
                     SpeakPlayer.Player.setPlayPauseButton(false);
-                    if (SpeakPlayer.Player.getCurrentlyPlayingSong()) {
-                        SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying = false;
-                    }
                 }
                 clearInterval(audio_clock);
             });
@@ -493,7 +539,9 @@ SpeakPlayer.Player = {
                 SpeakPlayer.Playlist.removeFromPlaylist(SpeakPlayer.Player.getCurrentlyPlayingSong());
             });
             audioEl.addEventListener("play", function () {
+                var song = SpeakPlayer.Player.getCurrentlyPlayingSong();
                 song.isPlaying = true;
+                $('[data-song-id=' + song.id+']').addClass('playing');
                 if (!SpeakPlayer.Player.controls.playPause.hasClass('playing')) {
                     SpeakPlayer.Player.setPlayPauseButton(true);
                 }
@@ -518,6 +566,8 @@ SpeakPlayer.Player = {
     },
     clearCurrentlyPlayingSong: function () {
         this.audioElement.remove();
+        this.audioElement = null;
+        this.controls.endTime.text('0:00');
         this.currentlyPlayingArtistEl.text('');
         this.currentlyPlayingSongNameEl.text('');
     },
@@ -535,6 +585,8 @@ SpeakPlayer.Player = {
                 return SpeakPlayer.Playlist.playlist[i];
             }
         }
+        //if we cannot find in playlist array, grab from dom.
+        return this.getSong(SpeakPlayer.Playlist.playlistContainer.find('.current').data('song-id'));
     },
     //gets a song object based on ID
     getSong: function (id) {

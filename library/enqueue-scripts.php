@@ -24,6 +24,7 @@ if (!function_exists('FoundationPress_scripts')) :
         wp_enqueue_script('jquery-ui-sortable');
         wp_enqueue_script('jquery-ui-tabs');
         wp_enqueue_script('jquery-ui-slider');
+        wp_enqueue_script('jquery-ui-tooltip');
         wp_enqueue_script('custom-scrollbar');
         wp_enqueue_script('sketch');
         wp_enqueue_script('handlebars');

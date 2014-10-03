@@ -97,6 +97,9 @@
  	#controls{
  		float:right;
  		padding:10px 0px 10px 0px;
+        .volume.muted svg .style1{
+          display:none;
+        }
  		&>a{
  			display:inline-block;
  			margin:0px 15px;
@@ -109,6 +112,7 @@
  					display: block;
  				}
  			}
+
  			#volumeContainer{
  				display:none;
  				position: absolute;
@@ -194,6 +198,7 @@
  				cursor:pointer;
  				height:80px;
  				width:200px;
+                top:0 !important;
  				padding:5px;
  				box-sizing:border-box;
  				border-bottom:1px solid $medium-grey;
@@ -202,7 +207,16 @@
  				background:$light-grey;
  				float:left;
  				margin:10px 5px 0px 5px;
-
+                &:hover{
+                  cursor: -moz-grabbing;
+                  cursor: -webkit-grab;
+                  cursor: url(https://mail.google.com/mail/images/2/openhand.cur) 8 8, move;
+                }
+                &:active{
+                  cursor: -moz-grab;
+                  cursor: -webkit-grabbing;
+                  cursor: url(https://mail.google.com/mail/images/2/closedhand.cur) 8 8, move;
+                }
  				&.playing{
  					background:$light-grey;
 
@@ -251,17 +265,20 @@
  					max-width:40%;
  					max-height:100%;
  				}
+
  				.play, .pause{
  					opacity:0;
- 					width:30px;
- 					height:30px;
- 					left:15px;
  					top:50%;
  					margin-top:-30px;
  					font-size:40px;
  					color:$very-light-grey;
  					position:absolute;
  					left:50%;
+                  &:hover{
+                    svg rect{
+                      fill:$very-light-grey;
+                    }
+                  }
  				}
  				&:hover:not(.playing){
  					.play{
