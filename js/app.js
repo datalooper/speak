@@ -343,7 +343,14 @@ SpeakPlayer.Player = {
         this.setListeners();
         this.bindPlayer();
         //setup tooltips
-        $(document).tooltip();
+        $( document ).tooltip({
+            extraClass: "speakTooltip",
+            position: {
+                my: "center bottom",
+                at: "center top"
+
+            }
+        });
         SpeakPlayer.Seekbar.init();
         SpeakPlayer.Volumeslider.init();
 

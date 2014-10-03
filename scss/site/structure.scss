@@ -202,6 +202,20 @@ $dark-blue : #272e6a;
  */
 // Add some whitespace between top bar and content
 
+/** Tooltip **/
+.ui-tooltip, .arrow:after,.speakTooltip{
+  background: rgba(0,0,0,.8) !important;
+  border:1px solid rgba(255,255,255,.4) !important;
+  padding:5px !important;
+  box-shadow:none !important;
+}
+.ui-tooltip-content {
+  padding: 0px 5px;
+  color: $light-grey;
+
+  border-radius: 20px;
+  font: lighter 14px $sans-serif;
+}
 
 .reset{
   /* http://meyerweb.com/eric/tools/css/reset/
