@@ -4,11 +4,10 @@
 body = $('body');
 
 $(document).on('ajax-navigation', function () {
-    if (checkPage() == "music") {
-        SpeakPlayer.init($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
-    }
     checkPage();
     checkHome();
+    bindMailChimp();
+
 });
 $(document).on('no-ajax-navigation', function () {
     checkPage();
@@ -28,6 +27,12 @@ $(document).ready(function () {
     homeTopBarContainer = $('.homeNavWrap');
     checkPage();
     checkHome();
+
+    $(window).scroll(function () {
+        if (pageName == "home") {
+            checkScroll();
+        }
+    });
 });
 
 body.on('click', '.userMore', function () {
@@ -52,16 +57,25 @@ body.on('click', '.userLess', function () {
 function checkPage() {
 
     var activeNav = $('.top-bar-menu li.active a'), slinky = $('#slinky');
-    pageName = body.attr('class');
+    pageName = body.attr('class'), contentContainer = $('#content-container');
 
+    //contentContainer.children('section:not(".'+pageName+'")').height('100%');
+    //contentContainer.children('section.'+pageName).height('auto');
     //fades out visualizer
     $('canvas').removeClass('opaque');
     if (pageName != "home" && homeTopBarContainer.hasClass('transparent')) {
         homeTopBarContainer.removeClass('transparent');
-    } else if (pageName == "home") {
+    }
+    if (pageName == "home") {
         checkScroll();
     } else if (pageName == "music") {
-        player.libraryContainer.removeClass('transparent');
+            console.log(pageName);
+        //delays loading of music player until page landed to avoid jitter
+        setTimeout(function(){
+            SpeakPlayer.init($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
+            SpeakPlayer.Library.libraryContainer.removeClass('transparent');
+
+        }, 800);
     }
 
     //animates slinky
@@ -80,24 +94,24 @@ function checkHome() {
     }
 }
 function setupHome() {
-    circleCTAs = $('.circleCTAs img');
+    var circleCTAs = $('.circleCTAs img');
     circleCTAs.addClass('animated');
     setupHomeCarousel();
     setupEquipmentSection();
 }
 
 
-$(window).scroll(function () {
-    if (pageName == "home") {
-        checkScroll();
-    }
-});
+
 function checkScroll() {
-    if (screenWindow.scrollTop() > 300 && homeTopBarContainer.hasClass('transparent')) {
+    var circleCTAs =$('.circleCTAs img'),
+        scrollTop = screenWindow.scrollTop();
+    if (scrollTop > 300 && homeTopBarContainer.hasClass('transparent')) {
         homeTopBarContainer.removeClass('transparent');
         circleCTAs.removeClass('animated');
-    } else if (screenWindow.scrollTop() < 300 && !homeTopBarContainer.hasClass('transparent')) {
+    } else if (scrollTop < 300 && !homeTopBarContainer.hasClass('transparent') ) {
         homeTopBarContainer.addClass('transparent');
+    } else if(scrollTop > 400 && scrollTop < 1300 && circleCTAs.hasClass('animated')){
+        circleCTAs.removeClass('animated');
     }
 }
 //Mailing list show/hide

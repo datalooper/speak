@@ -222,9 +222,12 @@
 
  					&:hover{
  						.pause{
- 							opacity:1;
+                          opacity:1;
 
  						}
+                      .play{
+                        display:none;
+                      }
  					}
  				}
  				&.current{
@@ -275,7 +278,7 @@
  					position:absolute;
  					left:50%;
                   &:hover{
-                    svg rect{
+                    svg rect, svg, svg polygon{
                       fill:$very-light-grey;
                     }
                   }
@@ -283,8 +286,10 @@
  				&:hover:not(.playing){
  					.play{
  						opacity:1;
-
  					}
+                    .pause{
+                      display:none;
+                    }
  				}
  				&:hover {
  					.remove{
@@ -321,6 +326,7 @@
  						width:100%;
  						height:100%;
  						background:$medium-grey;
+
  					}
  				}	//end hover
  				}	//end li

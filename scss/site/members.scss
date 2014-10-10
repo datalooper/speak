@@ -1,11 +1,6 @@
 
 .members{
-	.top-bar-container {
-		border-bottom:3px solid rgba(39,46,106,1);
-		.top-bar ul  li.active a{
-			color:$dark-blue;
-		}
-	}
+
 	#content-container{
 		transform: translate3d(-25%, 0, 0);
 	}
@@ -22,7 +17,7 @@
 	opacity:.7;
 }
 #content-container section.members{
-	padding-top:52px;
+
 	
 	.user{
 		padding:0;

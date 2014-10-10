@@ -7,8 +7,6 @@ c.compute_dimensions()}else a.S("[data-orbit]",a.scope).each(function(b,c){var d
  * Created by vcimo5 on 9/30/14.
  */
 jQuery(document).ready(function ($) {
-    console.log("document loaded");
-    SpeakPlayer.init($('#libraryContainer'), $('#playerContainer'), $('#playlistContainer'));
 
 });
 
@@ -17,14 +15,24 @@ SpeakPlayer = {
     init: function (libraryContainer, playerContainer, playlistContainer) {
         console.log("init attempt. player.isInitialized= %s, libraryContainer.length= %s", this.isInitialized, libraryContainer.length);
         if (this.isInitialized == "false" && libraryContainer.length > 0) {
-            console.log('init');
-
             this.defineSVG();
+            var ajaxLoaderEl = $('body').find('#ajaxLoader');
+            var loader = setInterval(function(){
+                if(libraryContainer.height() > 0) {
+                    ajaxLoaderEl.fadeOut();
+                    clearInterval(loader);
+                }
+            }, 100);
+            //just in case
+            setTimeout(function(){
+                clearInterval(loader);
+            },3000);
             this.Library.render(libraryContainer);
             this.Playlist.render(playlistContainer);
-
+            this.isInitialized = "true";
             this.Player.render(playerContainer);		//only want to call once
             //this.Visualizer.initVisualizer();
+
         }
     },
 
@@ -58,7 +66,8 @@ SpeakPlayer.Song = function(obj) {
         this.releaseDate = '',
         this.albumArtUrl = '',
         this.id = '-1',
-        this.genre = ''
+        this.genre = '',
+        this.artistLink = ''
 
 
     // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
@@ -67,6 +76,8 @@ SpeakPlayer.Song = function(obj) {
  * Created by vcimo5 on 9/30/14.
  */
 SpeakPlayer.Seekbar = {
+    value : 0,
+    audio_clock : '',
     init : function(){
         seekBar = SpeakPlayer.Player.controls.seekBar;
         //stops seeking when use begins drag
@@ -80,10 +91,10 @@ SpeakPlayer.Seekbar = {
         //resumes seeking when user ends drag
         seekBar.on("slidestop", function (event, ui) {
 
-            value = seekBar.slider("value");
+            this.value = seekBar.slider("value") || 0;
             SpeakPlayer.Player.audioElement.currentTime = value / 10;
             if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying) {
-                audio_clock = SpeakPlayer.Seekbar.startSeeking();
+                this.audio_clock = SpeakPlayer.Seekbar.startSeeking();
             }
         });
     },
@@ -101,7 +112,7 @@ SpeakPlayer.Seekbar = {
     //making the seekBar seem grainy.
     startSeeking : function() {
         return setInterval(function () {
-            value += 1;
+            this.value += 1;
             SpeakPlayer.Player.controls.seekBar.slider("value", value);
 
         }, 100);
@@ -112,6 +123,7 @@ SpeakPlayer.Seekbar = {
 SpeakPlayer.Library = {
     libraryContainer : "",
     feature : "",
+    list : '',
     render: function (libraryContainer) {
         this.libraryContainer = libraryContainer;
         this.feature = libraryContainer.find('#featured');
@@ -132,20 +144,59 @@ SpeakPlayer.Library = {
         });
     },
 
-    populatePlayer: function (obj) {
+    sizeLibraryContainer: function () {
+        console.log("sizing container");
+        var playlistHeight = SpeakPlayer.Playlist.playlistContainer.hasClass('active') ? SpeakPlayer.Playlist.playlistContainer.outerHeight() : 0,
+            playerHeight = SpeakPlayer.Player.playerContainer.is(':visible') ? SpeakPlayer.Player.playerContainer.outerHeight() : 0,
+            headerOffset = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').offset().top,
+            headerHeight = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').outerHeight(),
+            bottomMargin = parseInt(SpeakPlayer.Library.libraryContainer.find("#library").css('margin-bottom')),
+            libHeight = $(window).height()-headerOffset-headerHeight-bottomMargin-playlistHeight-playerHeight;
+            SpeakPlayer.Library.libraryContainer.find("#library").height(libHeight);
 
+
+    },
+    renderHeaderFilter: function () {
+        var htmlHeader = Handlebars.templates['headerFilter.hbs'];
+        this.libraryContainer.append(htmlHeader);
+    },
+    populatePlayer: function (obj) {
+        var songFeature;
         $.each(obj, function (key, song) {
             var songObj = new SpeakPlayer.Song(song);
-            if(songObj.isFeatured){
-                SpeakPlayer.Library.renderFeature(songObj);
+
+            if(songObj.isFeatured && songFeature == null){
+                songFeature = songObj;
+            } else if(window.location.hash.substring(1) == songObj.id){
+                songFeature = songObj;
             }
+
+
+            if($.inArray(songObj.genre, SpeakPlayer.Player.genres) == -1){
+                SpeakPlayer.Player.genres.push(songObj.genre);
+            }
+
             SpeakPlayer.Player.songs.push(songObj);
+
         });
+
+        this.renderFeature(songFeature);
+        this.renderHeaderFilter();
+        this.renderGenreList();
         this.renderSongs();
+        this.sizeLibraryContainer();
     },
     renderFeature : function(song){
+        this.feature = this.libraryContainer.find('#featured');
         var htmlFeature = Handlebars.templates['featuredTrack.hbs'](song);
-        SpeakPlayer.Library.feature.html(htmlFeature);
+
+        if(this.feature.length > 0){
+            this.feature.html(htmlFeature);
+        } else{
+            SpeakPlayer.Library.libraryContainer.prepend(htmlFeature);
+
+        }
+
     },
     //renderSongs: function () {
     //    htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
@@ -197,7 +248,15 @@ SpeakPlayer.Library = {
 //	htmlSongs += "</ul>";
 //	SpeakPlayer.player.libraryContainer.prepend(htmlFeature).append(htmlSongs);
 //}
+    renderGenreList : function(){
+        var html = "<div class='genres'><a href='#'>All</a>";
+        $.each(SpeakPlayer.Player.genres, function(index, element){
+            html += '<a href="#">'+element+'</a>';
+        });
+        html += "</div>";
+        SpeakPlayer.Library.libraryContainer.append(html);
 
+    },
     renderSongs : function(){
 
         var htmlSongs = Handlebars.templates['viewBySong.hbs'](SpeakPlayer.Player.songs);
@@ -205,7 +264,7 @@ SpeakPlayer.Library = {
         var options = {
             valueNames: [ 'songName','artistName', 'albumName','date','genre' ]
         };
-        new List('libraryContainer', options);
+        this.list = new List('libraryContainer', options);
 }
 
 
@@ -277,10 +336,14 @@ SpeakPlayer.Playlist = {
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
             SpeakPlayer.Playlist.playlistContainer.addClass('active');
+            SpeakPlayer.Library.sizeLibraryContainer();
             playerUl.sortable().disableSelection();
         } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {
             playerUl.append(htmlNoPlay + html);
-        } else {
+        } else if (playOrder == SpeakPlayer.Player.PREPEND_PLAYLIST) {
+            playerUl.prepend(htmlPlaying + html);
+        } else
+        {
             playerUl.find('.current').after(htmlNoPlay + html);
         }
         librarySong.addClass('inPlaylist');
@@ -311,6 +374,7 @@ SpeakPlayer.Player = {
     isInitialized: 'false',
     audioElement: '',
     el: '',
+    genreFilter: [],
     controls: {
         volumeSlider: '',
         el: '',
@@ -322,11 +386,12 @@ SpeakPlayer.Player = {
         startTime: '',
         endTime: ''
     },
+    genres:[],
     songs: [],
     PLAY_NOW : 1,
     PLAY_NEXT : 2,
     ADD_TO_PLAYLIST : 3,
-
+    PREPEND_PLAYLIST : 4,
     /* Initially Renders Player */
     render: function (playerContainer) {
         this.playerContainer = playerContainer;
@@ -384,6 +449,34 @@ SpeakPlayer.Player = {
 
     bindPlayer: function () {
 
+        $(window).resize(function(){
+            if(SpeakPlayer.isInitialized) {
+                SpeakPlayer.Library.sizeLibraryContainer();
+            }
+        });
+        SpeakPlayer.Library.libraryContainer.on("click", ".clearPlaylist", function (event) {
+            SpeakPlayer.Playlist.playlist = [];
+            SpeakPlayer.Player.clearCurrentlyPlayingSong();
+            SpeakPlayer.Library.libraryContainer.find('.inPlaylist').removeClass('inPlaylist current');
+            SpeakPlayer.Playlist.playlistContainer.find('ul').html('');
+            return false;
+        });
+        SpeakPlayer.Library.libraryContainer.on("click", ".playAll", function (event) {
+            var song = null, songs = SpeakPlayer.Library.libraryContainer.find('#songContainer .song'), len = songs.length;
+
+
+            $(songs.get().reverse()).each(function(index, element){
+                    song = SpeakPlayer.Player.getSong($(this).data('song-id'));
+                    if (index == len - 1) {
+                        SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NOW);
+                    } else {
+                        SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PREPEND_PLAYLIST);
+                    }
+            });
+
+            return false;
+        });
+
 
         //click handler for song objects in library
         SpeakPlayer.Library.libraryContainer.on("click", "li .removeFromPlaylist", function (event) {
@@ -402,9 +495,49 @@ SpeakPlayer.Player = {
             SpeakPlayer.Player.audioElement.pause(song);
             return false;
         });
+        SpeakPlayer.Library.libraryContainer.on("click", ".genreButton", function () {
+            $(this).toggleClass('active');
+            SpeakPlayer.Library.libraryContainer.find('.genres').toggleClass('active');
+        });
+        SpeakPlayer.Library.libraryContainer.on("click", ".genres a", function () {
+            var genreFilter = $(this).text(), genreLink = $(this);
+
+            if(genreFilter == "All"){
+                SpeakPlayer.Player.genreFilter = [];
+                SpeakPlayer.Library.list.filter();
+                SpeakPlayer.Library.libraryContainer.find(".genres a.inactive").removeClass('inactive');
+                return false;
+            } else if(SpeakPlayer.Player.genreFilter.length == 0){
+                SpeakPlayer.Library.libraryContainer.find(".genres a").not(this).addClass("inactive");
+                genreLink.removeClass('inactive');
+                SpeakPlayer.Player.genreFilter.push(genreFilter);
+            } else if(genreLink.hasClass('inactive')){
+                genreLink.removeClass('inactive');
+                SpeakPlayer.Player.genreFilter.push(genreFilter);
+            } else{
+                genreLink.addClass('inactive')
+                SpeakPlayer.Player.genreFilter = jQuery.grep(SpeakPlayer.Player.genreFilter, function(value) {
+                    return value != genreFilter;
+                });
+            }
+            SpeakPlayer.Library.list.filter(function(item) {
+                return $.inArray(item.values().genre, SpeakPlayer.Player.genreFilter) > -1;
+            });
+
+            return false;
+        });
+
+        SpeakPlayer.Library.libraryContainer.on("click", ".filterLink", function () {
+            var filterTerm = $(this).text();
+            SpeakPlayer.Library.libraryContainer.find(".clearFilter").removeClass('hide');
+            SpeakPlayer.Library.libraryContainer.find("input.search").val(filterTerm);
+            SpeakPlayer.Library.list.search(filterTerm);
+            return false;
+        });
+
         //click handler for song objects in library
-        SpeakPlayer.Library.libraryContainer.on("click", "li .playNow", function (event) {
-            var el = $(this), song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id")),
+        SpeakPlayer.Library.libraryContainer.on("click",  ".playNow", function (event) {
+            var el = $(this), song = SpeakPlayer.Player.getSong(el.closest('[data-song-id]').data("song-id")),
                 playlistEl = SpeakPlayer.Playlist.playlistContainer.find('[data-song-id='+song.id+']');
             if(playlistEl.length > 0){
                 if(playlistEl.hasClass('current')){
@@ -431,6 +564,15 @@ SpeakPlayer.Player = {
             return false;
         });
 
+        SpeakPlayer.Library.libraryContainer.on("click", "li.song", function (event) {
+            var el = $(this);
+
+            if (player != null) {
+                song = SpeakPlayer.Player.getSong(el.closest('li').data("song-id"));
+                SpeakPlayer.Playlist.addToPlaylist(song, SpeakPlayer.Player.PLAY_NOW);
+            }
+            return false;
+        });
         SpeakPlayer.Library.libraryContainer.on("click", "li .addToPlaylist", function (event) {
             var el = $(this);
 
@@ -445,6 +587,15 @@ SpeakPlayer.Player = {
             el = $(this).parent();
             var song = SpeakPlayer.Player.getSong(el.data('song-id'));
             SpeakPlayer.Playlist.removeFromPlaylist(song);
+            return false;
+        });
+
+        //like item click handler
+        SpeakPlayer.Library.libraryContainer.on("click", ".likeTrack", function () {
+            var songId = $(this).closest('li').data('song-id'),
+                songLink = 'http://www.facebook.com/sharer.php?u='+window.location.origin+'/sounds/'+songId;
+            console.log(songLink);
+            window.open(songLink,'','width=657,height=400,scrollbars=1');
             return false;
         });
 
@@ -478,18 +629,41 @@ SpeakPlayer.Player = {
             }
 
         });
-        SpeakPlayer.Player.playerContainer.on("click",".volume", function(){
+        SpeakPlayer.Library.libraryContainer.on("keyup",".search", function() {
+            if($(this).val() == ""){
+                SpeakPlayer.Library.libraryContainer.find('.clearFilter').addClass('hide');
+            } else{
+                SpeakPlayer.Library.libraryContainer.find('.clearFilter').removeClass('hide');
+            }
+        });
+        SpeakPlayer.Library.libraryContainer.on("click",".clearFilter", function(){
+            $(this).addClass('hide');
+            SpeakPlayer.Library.libraryContainer.find('.search').val('');
+            SpeakPlayer.Library.list.search();
+        });
+                SpeakPlayer.Player.playerContainer.on("click",".volume svg", function(){
             if(SpeakPlayer.Player.controls.volume.hasClass('muted')) {
                 SpeakPlayer.Player.audioElement.volume = SpeakPlayer.Volumeslider.prevVolume/100;
                 SpeakPlayer.Volumeslider.volumeSlider.slider("value", SpeakPlayer.Volumeslider.prevVolume);
+                SpeakPlayer.Volumeslider.volumeSlider.slider("enable");
                 SpeakPlayer.Player.controls.volume.removeClass('muted');
 
             }else{
                 SpeakPlayer.Volumeslider.prevVolume = SpeakPlayer.Volumeslider.volumeSlider.slider("value");
                 SpeakPlayer.Volumeslider.volumeSlider.slider("value", 0);
                 SpeakPlayer.Player.audioElement.volume = 0;
+                SpeakPlayer.Volumeslider.volumeSlider.slider("disable");
+
                 SpeakPlayer.Player.controls.volume.addClass('muted');
             }
+        });
+
+        SpeakPlayer.Player.playerContainer.on("mouseleave",".volume", function() {
+            var volumeContainer = SpeakPlayer.Player.controls.volume.find("#volumeContainer");
+            volumeContainer.show();
+            setTimeout(function(){
+                volumeContainer.css('display','');
+            }, 500);
         });
         SpeakPlayer.Player.playerContainer.on("click", ".playlist", function () {
             var wrap = $(".off-canvas-wrap");
@@ -499,8 +673,9 @@ SpeakPlayer.Player = {
             } else {
                 SpeakPlayer.Playlist.playlistContainer.addClass("active");
                 wrap.addClass("playlistActive");
-
             }
+            SpeakPlayer.Library.sizeLibraryContainer();
+
         });
 
         //pauses player
@@ -572,8 +747,10 @@ SpeakPlayer.Player = {
         song.isPlaying = false;
     },
     clearCurrentlyPlayingSong: function () {
+        this.audioElement.pause();
         this.audioElement.remove();
         this.audioElement = null;
+        this.controls.startTime.text('0:00');
         this.controls.endTime.text('0:00');
         this.currentlyPlayingArtistEl.text('');
         this.currentlyPlayingSongNameEl.text('');
@@ -667,7 +844,7 @@ SpeakPlayer.Player = {
             this.audioElement.remove();
         }
         //instantiate new audio element
-        audio = this.audioElement = new Audio(song.songUrl);
+        var audio = this.audioElement = new Audio(song.songUrl);
         audio.addEventListener("loadedmetadata", function (_event) {
             var duration = audio.duration;
             //SpeakPlayer.Visualizer.initAnalyzer(audio);

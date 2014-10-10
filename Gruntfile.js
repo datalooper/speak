@@ -1,7 +1,11 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-
+      shell: {
+          renderHBS: {
+              command: 'handlebars js/speakplayer/templates/*.* -f js/templates.js'
+          }
+      },
     sass: {
       options: {
         includePaths: ['bower_components/foundation/scss']
@@ -30,7 +34,7 @@ module.exports = function(grunt) {
         cwd: 'bower_components/',
         src: '**/*.map',
         dest: 'js'
-      },
+      }
     },
 
     uglify: {
@@ -43,7 +47,7 @@ module.exports = function(grunt) {
 
     concat: {
       options: {
-        separator: ';',
+        separator: ';'
       },
       dist: {
         src: [
@@ -74,9 +78,13 @@ module.exports = function(grunt) {
       grunt: { files: ['Gruntfile.js'] },
       sass: {
         files: 'scss/**/*.scss',
-        tasks: ['sass'],
+        tasks: ['sass']
         
-      }, 
+      },
+    shell: {
+        files : 'js/speakplayer/templates/*.*',
+        tasks: ['shell']
+    },
       livereload: { 
         files: ['*.html', 'js/**/*.{js,json}', 'css/*.css','img/**/*.{png,jpg,jpeg,gif,webp,svg}'], 
         options: { 
@@ -94,6 +102,7 @@ module.exports = function(grunt) {
   });
 
 grunt.loadNpmTasks('grunt-sass');
+grunt.loadNpmTasks('grunt-shell');
 grunt.loadNpmTasks('grunt-autoprefixer');
 grunt.loadNpmTasks('grunt-contrib-watch');
 grunt.loadNpmTasks('grunt-contrib-concat');
@@ -101,6 +110,7 @@ grunt.loadNpmTasks('grunt-contrib-copy');
 grunt.loadNpmTasks('grunt-contrib-uglify');
 
 grunt.registerTask('build', ['sass']);
-grunt.registerTask('default', ['copy', 'uglify', 'concat', 'watch']);
+grunt.registerTask('default', ['copy', 'uglify', 'concat', 'watch', 'shell:renderHBS']);
 grunt.registerTask('compileJS',['concat:dist']);
+
 }

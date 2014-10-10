@@ -268,6 +268,22 @@ $dark-blue : #272e6a;
   }
 }
 
+#ajaxLoader{
+  position:absolute;
+  top:50%;
+  margin-left:-120px;
+  background:$light-grey;
+  z-index:100;
+  border-radius: 10px;
+  border:1px solid rgba(0,0,0,.5);
+  padding:10px;
+  left:50%;
+  p{
+    text-align: center;
+    margin-bottom:5px;
+  }
+
+}
 $top-bar-height:52px;
 .top-bar-container, .tab-bar {
 	position:relative;
@@ -282,10 +298,22 @@ $top-bar-height:52px;
 .left{
 	float:left;
 }
+.top-bar-container {
+  border-bottom: 3px solid rgba(73, 180, 56, 1);
+  .top-bar ul li.active a {
+    color: $green !important;
+  }
+}
 
+html, body, #content-container, .inner-wrap, .off-canvas-wrap{
+  height:100% !important;
+  overflow:hidden;
 
+}
 #content-container{
-	width:400%;
+  transform: translate3d(-50%, 0, 0);
+
+  width:400%;
 	z-index:2;
 	position:relative;
 	@include transition(all, 0.5s, ease-in-out);
@@ -303,30 +331,29 @@ $top-bar-height:52px;
 	>section{
 		width:25%;
 		float:left;
-		overflow:hidden;
-		min-height:100px;
+		overflow-y:auto;
+        overflow-x: hidden;
+        height:100%;
+        &.transition{
+          overflow-y:hidden;
+        }
+        &:not(.home){
+          margin-top:$top-bar-height;
+        }
 
-		&:before{
-			@include radialGradient();
-		}
 	}
 }
 
 body{
-	height:5000px;
-	&:before{
-		content: '';
-		z-index: 0;
-		height: 100%;
-		width: 100%;
-		left: 0;
-		top: 0;
-		position:fixed;
-		background: url( '../assets/img/noise.png' );
-		opacity:.5;
-	}
+
 	background:$dark-grey;
+  &:not(.music){
+    #ajaxLoader{
+      display:none;
+    }
+  }
 }
+
 
 
 .top-bar-container{
@@ -383,7 +410,7 @@ body{
 		#slinky{
 			display:block;
 			position:absolute;
-			background:$dark-blue;
+			background:$green;
 			height:4px;
 			margin-left:15px;
 			top:45px;
@@ -403,6 +430,7 @@ body{
 		}
 		ul{
 			background:none;
+            margin-right:20px;
 			li{
 				background: none;
 				a{

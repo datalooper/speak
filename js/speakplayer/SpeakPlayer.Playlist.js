@@ -48,10 +48,14 @@ SpeakPlayer.Playlist = {
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
             SpeakPlayer.Playlist.playlistContainer.addClass('active');
+            SpeakPlayer.Library.sizeLibraryContainer();
             playerUl.sortable().disableSelection();
         } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {
             playerUl.append(htmlNoPlay + html);
-        } else {
+        } else if (playOrder == SpeakPlayer.Player.PREPEND_PLAYLIST) {
+            playerUl.prepend(htmlPlaying + html);
+        } else
+        {
             playerUl.find('.current').after(htmlNoPlay + html);
         }
         librarySong.addClass('inPlaylist');

@@ -140,7 +140,10 @@ $other = get_posts($args);
 				</div>			
 				<video width="100%" height="auto" autoplay loop>
 					<source src="<?php echo get_template_directory_uri(); ?>/assets/video/loopingtape.mp4" type="video/mp4">
-						For the love of God, get a new browser!
+                    <source src="<?php echo get_template_directory_uri(); ?>/assets/video/loopingtape.ogg" type="video/ogg">
+                    <source src="<?php echo get_template_directory_uri(); ?>/assets/video/loopingtape.webm" type="video/webm">
+
+                    For the love of God, get a new browser!
 					</video>
 
 			</div>

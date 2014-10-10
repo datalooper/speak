@@ -1,17 +1,12 @@
  .participate{
- 	.top-bar-container {
- 		border-bottom:3px solid rgba(39,46,106,1);
- 		.top-bar ul li.active a{
- 			color:$dark-blue;
- 		}
- 	}
+
  	#content-container{
  		transform: translate3d(-75%, 0, 0);
  	}
 
  }
  #content-container section.participate{
-
+   padding-bottom:200px;
 	.social-container{
 		width:100%;
 		text-align: center;

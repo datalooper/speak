@@ -1,24 +1,15 @@
+<div class="bySongs" id="songContainer">
 <div class='songList header cf'>
+    <a class="playAll" href="#">Play All</a>
     <a class='sort songName' href="#" data-sort="songName">Song Name</a>
-
     <a class='sort artistName' href="#" data-sort="artistName">Artist</a>
     <a class='sort albumName' href="#" data-sort="albumName">Album</a>
     <a class='sort date'  href="#" data-sort="date">Date Released</a>
     <a class='sort genre'  href="#" data-sort="genre">Genre</a>
 </div>
-<ul class='bySongs list' id='library'>
+<ul class='list' id='library'>
     {{#each .}}
         <li  data-song-id={{id}} class='song cf'>
-
-        <div class='songImg'><img src='{{albumArtUrl}}'/></div>
-        <div class='songInfo'><p class='songName'>{{songName}}</p>
-            <a class='artistName' href=''>{{artistName}}</a>
-
-            <p class='albumName'>{{albumName}}</p>
-
-            <p class='date'>{{releaseDate}}</p>
-
-            <p class='genre'>{{genre}}</p></div>
         <div class='playOptions'>
             <a class="removeFromPlaylist" href="#" title="Remove From Playlist">
                 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="18.872px" height="25px" viewBox="0 0 18.872 25" enable-background="new 0 0 18.872 25" xml:space="preserve">
@@ -55,7 +46,7 @@
                 </svg>
 
             </a><a class='likeTrack' href='#' title="Like Track">
-                <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="18.872px" height="25px" viewBox="0 0 18.872 25" enable-background="new 0 0 18.872 25" xml:space="preserve">
+            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="18.872px" height="25px" viewBox="0 0 18.872 25" enable-background="new 0 0 18.872 25" xml:space="preserve">
                 <g>
                     <g>
                         <g>
@@ -68,7 +59,23 @@
                 </g>
                 </svg>
         </a></div>
+        <div class='songImg'><img src='{{albumArtUrl}}'/></div>
+        <div class='songInfo'><p class='songName'>{{songName}}</p>
+
+            {{#if artistLink }}
+                <a class='artistName' href='{{artistLink}}'>{{artistName}}</a>
+            {{else}}
+                <p class='artistName'>{{artistName}}</p>
+            {{/if}}
+
+            <p class='albumName'>{{albumName}}</p>
+
+            <p class='date'>{{releaseDate}}</p>
+
+            <p class='genre'>{{genre}}</p></div>
+
         </li>
     {{/each}}
 </ul>
 
+</div>

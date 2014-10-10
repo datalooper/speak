@@ -4,6 +4,7 @@
 SpeakPlayer.Library = {
     libraryContainer : "",
     feature : "",
+    list : '',
     render: function (libraryContainer) {
         this.libraryContainer = libraryContainer;
         this.feature = libraryContainer.find('#featured');
@@ -24,20 +25,59 @@ SpeakPlayer.Library = {
         });
     },
 
-    populatePlayer: function (obj) {
+    sizeLibraryContainer: function () {
+        console.log("sizing container");
+        var playlistHeight = SpeakPlayer.Playlist.playlistContainer.hasClass('active') ? SpeakPlayer.Playlist.playlistContainer.outerHeight() : 0,
+            playerHeight = SpeakPlayer.Player.playerContainer.is(':visible') ? SpeakPlayer.Player.playerContainer.outerHeight() : 0,
+            headerOffset = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').offset().top,
+            headerHeight = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').outerHeight(),
+            bottomMargin = parseInt(SpeakPlayer.Library.libraryContainer.find("#library").css('margin-bottom')),
+            libHeight = $(window).height()-headerOffset-headerHeight-bottomMargin-playlistHeight-playerHeight;
+            SpeakPlayer.Library.libraryContainer.find("#library").height(libHeight);
 
+
+    },
+    renderHeaderFilter: function () {
+        var htmlHeader = Handlebars.templates['headerFilter.hbs'];
+        this.libraryContainer.append(htmlHeader);
+    },
+    populatePlayer: function (obj) {
+        var songFeature;
         $.each(obj, function (key, song) {
             var songObj = new SpeakPlayer.Song(song);
-            if(songObj.isFeatured){
-                SpeakPlayer.Library.renderFeature(songObj);
+
+            if(songObj.isFeatured && songFeature == null){
+                songFeature = songObj;
+            } else if(window.location.hash.substring(1) == songObj.id){
+                songFeature = songObj;
             }
+
+
+            if($.inArray(songObj.genre, SpeakPlayer.Player.genres) == -1){
+                SpeakPlayer.Player.genres.push(songObj.genre);
+            }
+
             SpeakPlayer.Player.songs.push(songObj);
+
         });
+
+        this.renderFeature(songFeature);
+        this.renderHeaderFilter();
+        this.renderGenreList();
         this.renderSongs();
+        this.sizeLibraryContainer();
     },
     renderFeature : function(song){
+        this.feature = this.libraryContainer.find('#featured');
         var htmlFeature = Handlebars.templates['featuredTrack.hbs'](song);
-        SpeakPlayer.Library.feature.html(htmlFeature);
+
+        if(this.feature.length > 0){
+            this.feature.html(htmlFeature);
+        } else{
+            SpeakPlayer.Library.libraryContainer.prepend(htmlFeature);
+
+        }
+
     },
     //renderSongs: function () {
     //    htmlHeader = "<div class='songList header cf'><p class='songName'>Song Name</p><p class='artistName'>Artist</p><p class='albumName'>Album</p><p class='date'>Date Released</p><p class='genre'>Genre</p></div><ul class='bySongs' id='library'>";
@@ -89,7 +129,15 @@ SpeakPlayer.Library = {
 //	htmlSongs += "</ul>";
 //	SpeakPlayer.player.libraryContainer.prepend(htmlFeature).append(htmlSongs);
 //}
+    renderGenreList : function(){
+        var html = "<div class='genres'><a href='#'>All</a>";
+        $.each(SpeakPlayer.Player.genres, function(index, element){
+            html += '<a href="#">'+element+'</a>';
+        });
+        html += "</div>";
+        SpeakPlayer.Library.libraryContainer.append(html);
 
+    },
     renderSongs : function(){
 
         var htmlSongs = Handlebars.templates['viewBySong.hbs'](SpeakPlayer.Player.songs);
@@ -97,7 +145,7 @@ SpeakPlayer.Library = {
         var options = {
             valueNames: [ 'songName','artistName', 'albumName','date','genre' ]
         };
-        new List('libraryContainer', options);
+        this.list = new List('libraryContainer', options);
 }
 
 

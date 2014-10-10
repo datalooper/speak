@@ -2,6 +2,8 @@
  * Created by vcimo5 on 9/30/14.
  */
 SpeakPlayer.Seekbar = {
+    value : 0,
+    audio_clock : '',
     init : function(){
         seekBar = SpeakPlayer.Player.controls.seekBar;
         //stops seeking when use begins drag
@@ -15,10 +17,10 @@ SpeakPlayer.Seekbar = {
         //resumes seeking when user ends drag
         seekBar.on("slidestop", function (event, ui) {
 
-            value = seekBar.slider("value");
+            this.value = seekBar.slider("value") || 0;
             SpeakPlayer.Player.audioElement.currentTime = value / 10;
             if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying) {
-                audio_clock = SpeakPlayer.Seekbar.startSeeking();
+                this.audio_clock = SpeakPlayer.Seekbar.startSeeking();
             }
         });
     },
@@ -36,7 +38,7 @@ SpeakPlayer.Seekbar = {
     //making the seekBar seem grainy.
     startSeeking : function() {
         return setInterval(function () {
-            value += 1;
+            this.value += 1;
             SpeakPlayer.Player.controls.seekBar.slider("value", value);
 
         }, 100);

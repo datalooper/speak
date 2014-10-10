@@ -16,6 +16,7 @@
  			<h2 class="section">Contact</h2>
  			<p><span>Email</span><a href="mailto:info@speakstudios.org">info@speakstudios.org</a></p>
  			<p><span>Phone</span>805-234-8357</p>
+
  			<h2 class="section">Connect</h2>
  			<ul class="social-container">
 						<li><a href="" class="fb social"></a></li>

@@ -15,7 +15,8 @@ SpeakPlayer.Song = function(obj) {
         this.releaseDate = '',
         this.albumArtUrl = '',
         this.id = '-1',
-        this.genre = ''
+        this.genre = '',
+        this.artistLink = ''
 
 
     // IF AN OBJECT WAS PASSED THEN INITIALISE PROPERTIES FROM THAT OBJECT
