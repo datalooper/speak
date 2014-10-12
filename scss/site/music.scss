@@ -3,6 +3,10 @@
   width: 19%;
   padding-right: 3%;
   padding-left: 1%;
+  @media #{$small-only} {
+    float:none;
+    width:auto;
+  }
 }
 
 @mixin featuredPlayer(){
@@ -96,7 +100,10 @@ canvas.sketch {
       height:100%;
       position:relative;
       padding-right: 2%;
-      img{
+      @media #{$small-only} {
+        max-width: 30%;
+      }
+        img{
         max-height:100%;
         width:auto;
       }
@@ -176,6 +183,13 @@ canvas.sketch {
       }
 
     }
+    @media #{$small-only} {
+      height:auto;
+      margin:3px;
+      p.tag, p.trackInfo{
+        display:none;
+      }
+    }
   }
   .genres {
     width:100%;
@@ -209,9 +223,9 @@ canvas.sketch {
     @include light-gradient();
     position: relative;
     height: 35px;
-    border-radius: 5px;
-    border-bottom: 1px solid rgba(0, 0, 0, .4);
 
+    border-bottom: 1px solid rgba(0, 0, 0, .4);
+    @media #{$xlarge-up} {     border-radius: 5px;}
     a{
       &:hover{
         background: rgba(0, 0, 0, .05);
@@ -219,6 +233,7 @@ canvas.sketch {
     }
     /* TOP FILTER HEADER */
     &.filter {
+
       .search {
         width: 20%;
         font-family: $sans-serif;
@@ -227,7 +242,9 @@ canvas.sketch {
         border-radius: 10px;
         padding:0 10px;
         position: relative;
+
       }
+
       .clearFilter{
         float: left;
         width: 16px;
@@ -268,7 +285,9 @@ canvas.sketch {
       }
 
       nav {
-        span{
+        display:block;
+        @media #{$small-only} { display:none; }
+          span{
           font-size:14px;
           color:rgba(0,0,0,.4);
           font-family:$sans-serif;
@@ -303,6 +322,19 @@ canvas.sketch {
           &:not(.active):hover {
             color: $medium-grey-alt;
           }
+        }
+      }
+
+      @media #{$small-only} {
+        padding:10px;
+        .search{
+          width:100%;
+          margin:0;
+          float:none;
+        }
+        height:auto;
+        a{
+          display:none;
         }
       }
     }
@@ -357,6 +389,10 @@ canvas.sketch {
         &:after {
           content: "▼";
         }
+      }
+
+      @media #{$small-only} {
+        display:none;
       }
     }
     input, span, a, ul, li {
@@ -483,6 +519,9 @@ canvas.sketch {
             width:auto;
             border: 1px solid $light-grey;
           }
+          @media #{$small-only} {
+            width:20%;
+          }
         }
 
         .playOptions {
@@ -526,6 +565,10 @@ canvas.sketch {
           .removeFromPlaylist svg{
             fill:$red;
           }
+
+          @media #{$small-only} {
+            display:none;
+          }
         }
 
 
@@ -533,6 +576,14 @@ canvas.sketch {
         p, a {
           padding-top: 3px;
 
+          @media #{$small-only} {
+            &.songName{
+              font-weight:400;
+            }
+            &.artistName{
+              font-size:14px;
+            }
+          }
           &.songName, &.artistName, &.albumName, &.date, &.genre {
             @include songName();
             @include ellipses();
@@ -540,6 +591,24 @@ canvas.sketch {
 
           &.genre, &.date {
             width: 13%;
+            @media #{$small-only} {
+              float:right;
+              width:auto;
+              position:absolute;
+              right:10px;
+              top:0;
+              padding:3px;
+              font-size:13px;
+
+            }
+          }
+          &.genre{
+            @media #{$small-only} {
+              top:50px;
+              background:$medium-grey;
+              color:$light-grey;
+              border-radius: 10px;
+            }
           }
           color: $dark-grey;
           margin: 0;
@@ -553,11 +622,15 @@ canvas.sketch {
           float: left;
           margin: 0;
         }
-
+        @media #{$small-only} {
+          height:auto;
+        }
 
       }
     }
   }
-
+  @media #{$small-only} {
+    margin:0px;
+  }
 }
 

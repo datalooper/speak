@@ -338,12 +338,16 @@ html, body, #content-container, .inner-wrap, .off-canvas-wrap{
           overflow-y:hidden;
         }
         &:not(.home){
-          margin-top:$top-bar-height;
         }
 
 	}
 }
+@media #{$medium-up} {
+  #content-container section:not(.home){
+    margin-top:$top-bar-height;
 
+  }
+}
 body{
 
 	background:$dark-grey;

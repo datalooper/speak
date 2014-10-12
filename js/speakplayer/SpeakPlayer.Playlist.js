@@ -4,11 +4,16 @@
 SpeakPlayer.Playlist = {
     playlist: [],
     playlistContainer: "",
+    SMALL_SCREEN_WIDTH: 640,
+    customScrollBar : '',
     render: function (playlistContainer) {
         this.playlistContainer = playlistContainer;
         var html = "<ul class='cf' id='playlistUl'></ul>";
         this.playlistContainer.append(html);
-        this.setupScrollSlider();
+        if($(window).width() > this.SMALL_SCREEN_WIDTH) {
+            console.log("scroll slider");
+            this.setupScrollSlider();
+        }
     },
 
     //removes element from playlist by recreating array
@@ -60,11 +65,13 @@ SpeakPlayer.Playlist = {
         }
         librarySong.addClass('inPlaylist');
         this.playlist.push(song);
-
+        if($('window').width() > this.SMALL_SCREEN_WIDTH && this.customScrollBar == '') {
+            this.setupScrollSlider();
+        }
     },
 
     setupScrollSlider: function () {
-        this.playlistContainer.mCustomScrollbar({
+        this.customScrollBar = this.playlistContainer.mCustomScrollbar({
             axis: "x",
             advanced: {
                 autoExpandHorizontalScroll: true
