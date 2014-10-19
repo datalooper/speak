@@ -21,7 +21,18 @@ SpeakPlayer.Player = {
         stop: '',
         playlist: '',
         startTime: '',
-        endTime: ''
+        endTime: '',
+        playlistHelper : ''
+    },
+    svgs : {
+        prevSVG : '',
+        nextSVG : '',
+        volumeSVG : '',
+        playSVG : '',
+        pauseSVG : '',
+        playlistSVG : '',
+        expandSVG :''
+
     },
     genres:[],
     songs: [],
@@ -32,14 +43,14 @@ SpeakPlayer.Player = {
     /* Initially Renders Player */
     render: function (playerContainer) {
         this.playerContainer = playerContainer;
-        var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a  href="#" class="playlist">' + playlistSVG + '</a><a href="#" class="volume">' + volumeSVG + '<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">' + prevSVG + '</a><a href="#" class="playPause">' + playSVG + '</a><a href="#" class="next">' + nextSVG + '</a></div></div>';
+        this.defineSVG();
+        var html = '<div id="player"><div class="cf seekBarContainer"><span class="songTime" id="startTime">0:00</span><div class="seekBar"></div><span class="songTime" id="endTime">0:00</span></div><div class="currentlyPlaying"><p><span class="songName"></span><span class="artist"></span></p></div><div id="controls"><a href="#" class="playlist">' + this.svgs.playlistSVG + '<div class="playlistHelper"></div></a><a href="#" class="volume">' + this.svgs.volumeSVG + '<div id="volumeContainer"><div id="volumeSlider"></div></div></a><a href="#" class="previous">' + this.svgs.prevSVG + '</a><a href="#" class="playPause">' + this.svgs.playSVG + '</a><a href="#" class="next">' + this.svgs.nextSVG + '</a></div></div>';
         this.playerContainer.append(html);
         this.isInitialized = true;
         this.el = this.playerContainer.find('#player');
 
         this.currentlyPlayingArtistEl = this.playerContainer.find('.currentlyPlaying .artist');
         this.currentlyPlayingSongNameEl = this.playerContainer.find('.currentlyPlaying .songName');
-
 
         this.initControls();
         this.setListeners();
@@ -74,16 +85,24 @@ SpeakPlayer.Player = {
             max: 100,
             value: 60
         });
-        this.controls.seekBar = this.playerContainer.find('.seekBar').slider({
-            range: "min",
-            value: 0,
-            min: 1
-        });
+        this.controls.seekBar = this.playerContainer.find('.seekBar');
         this.controls.startTime = this.playerContainer.find('#startTime');
         this.controls.endTime = this.playerContainer.find('#endTime');
+        this.controls.playlistHelper = this.playerContainer.find('.playlistHelper');
+        SpeakPlayer.Seekbar.init();
     },
 
+    defineSVG: function () {
+        this.svgs.prevSVG = Handlebars.templates['prevSVG.hbs']();
+        console.log(this.svgs.prevSVG);
+        this.svgs.nextSVG = Handlebars.templates['nextSVG.hbs']();
+        this.svgs.volumeSVG = Handlebars.templates['volumeSVG.hbs']();
+        this.svgs.playSVG = Handlebars.templates['playSVG.hbs']();
+        this.svgs.pauseSVG = Handlebars.templates['pauseSVG.hbs']();
+        this.svgs.playlistSVG = Handlebars.templates['playlistSVG.hbs']();
+        this.svgs.expandSVG = Handlebars.templates['expandSVG.hbs']();
 
+    },
     bindPlayer: function () {
 
         $(window).resize(function(){
@@ -327,21 +346,17 @@ SpeakPlayer.Player = {
     },
 
     setListeners: function () {
-        if (SpeakPlayer.Player.audioElement) {
-            var userSlideStarted = false,
-                seekBar = SpeakPlayer.Player.controls.seekBar,
-                audioEl = SpeakPlayer.Player.audioElement;
-
+        if (this.audioElement) {
             //waits until metadata is loaded to scale seekBar to track duration
-            audioEl.addEventListener('loadedmetadata', function () {
-                seekBar.slider("option", "max", audioEl.duration * 10);
+            this.audioElement.addEventListener('loadedmetadata', function () {
+                SpeakPlayer.Seekbar.seekBar.slider("option", "max", SpeakPlayer.Player.audioElement.duration * 10);
                 value = 0;
-                if (typeof(audio_clock) === "undefined" || audio_clock == null) {
-                    audio_clock = SpeakPlayer.Seekbar.startSeeking();
+                if (typeof(SpeakPlayer.Seekbar.audio_clock) === "undefined" || SpeakPlayer.Seekbar.audio_clock == '') {
+                    SpeakPlayer.Seekbar.startSeeking();
                 }
             });
 
-            audioEl.addEventListener("pause", function () {
+            this.audioElement.addEventListener("pause", function () {
                 if(SpeakPlayer.Playlist.playlist.length > 0){
                     SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying = false;
                 }
@@ -349,15 +364,15 @@ SpeakPlayer.Player = {
                 if (SpeakPlayer.Player.controls.playPause.hasClass('playing')) {
                     SpeakPlayer.Player.setPlayPauseButton(false);
                 }
-                clearInterval(audio_clock);
+                clearInterval(SpeakPlayer.Seekbar.audio_clock);
             });
             //listens to end of song and queues up the next in the list.
             //currently, this queries the DOM and checks for the next element.
             //in would probably be better to internally maintain the order of the playlist, but...later.
-            audioEl.addEventListener('ended', function () {
+            this.audioElement.addEventListener('ended', function () {
                 SpeakPlayer.Playlist.removeFromPlaylist(SpeakPlayer.Player.getCurrentlyPlayingSong());
             });
-            audioEl.addEventListener("play", function () {
+            this.audioElement.addEventListener("play", function () {
                 var song = SpeakPlayer.Player.getCurrentlyPlayingSong();
                 song.isPlaying = true;
                 $('[data-song-id=' + song.id+']').addClass('playing');
@@ -365,19 +380,16 @@ SpeakPlayer.Player = {
                     SpeakPlayer.Player.setPlayPauseButton(true);
                 }
                 //clears previous seekbar intervals
-                if (typeof(audio_clock) !== "undefined") {
-                    clearInterval(audio_clock);
-                    audio_clock = null;
+                if (typeof(SpeakPlayer.Seekbar.audio_clock) !== "undefined") {
+                    clearInterval(SpeakPlayer.Seekbar.audio_clock);
+                    SpeakPlayer.Seekbar.audio_clock = '';
                 }
-                audio_clock = SpeakPlayer.Seekbar.startSeeking();
+                SpeakPlayer.Seekbar.startSeeking();
             });
         }
     },
     stopSong: function () {
-        if (audio_clock !== "undefined" && audio_clock != null) {
-            clearInterval(audio_clock);
-            SpeakPlayer.Player.controls.seekBar.slider("value", 0);
-        }
+        SpeakPlayer.Seekbar.stopSeeking();
         SpeakPlayer.Player.audioElement.pause();
         SpeakPlayer.Player.audioElement.remove();
         song.isLoaded = false;
@@ -420,10 +432,10 @@ SpeakPlayer.Player = {
     setPlayPauseButton: function (isPlaying) {
         if (isPlaying) {
             this.controls.playPause.addClass('playing');
-            this.controls.playPause.html(pauseSVG);
+            this.controls.playPause.html(SpeakPlayer.Player.svgs.pauseSVG);
         } else {
             this.controls.playPause.removeClass('playing');
-            this.controls.playPause.html(playSVG);
+            this.controls.playPause.html(SpeakPlayer.Player.svgs.playSVG);
         }
     },
 
@@ -480,10 +492,11 @@ SpeakPlayer.Player = {
             this.audioElement.pause();
             this.audioElement.remove();
         }
+        SpeakPlayer.Seekbar.stopSeeking();
         //instantiate new audio element
-        var audio = this.audioElement = new Audio(song.songUrl);
-        audio.addEventListener("loadedmetadata", function (_event) {
-            var duration = audio.duration;
+        this.audioElement = new Audio(song.songUrl);
+        this.audioElement.addEventListener("loadedmetadata", function (_event) {
+            var duration = SpeakPlayer.Player.audioElement.duration;
             //SpeakPlayer.Visualizer.initAnalyzer(audio);
             SpeakPlayer.Player.controls.endTime.html(SpeakPlayer.Seekbar.secondsToTime(duration));
         });
@@ -501,10 +514,9 @@ SpeakPlayer.Player = {
         SpeakPlayer.Player.setCurrentlyPlayingSong(song);
         SpeakPlayer.Player.isPlaying = true;
         /****************/
-        audio.volume = 1.0;		//remove soon
-        audio.pause();
-        audio.load(); //suspends and restores all audio element
-        audio.play();
+        this.audioElement.pause();
+        this.audioElement.load(); //suspends and restores all audio element
+        this.audioElement.play();
 
         //sets up seekbar and song ended listeners. only called once since seekbar is single instance
         this.setListeners();

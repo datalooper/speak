@@ -90,7 +90,6 @@ canvas.sketch {
     p {
       color: $light-grey;
       width: auto;
-
     }
     .songImg, .songInfo {
       float: left;
@@ -100,9 +99,7 @@ canvas.sketch {
       height:100%;
       position:relative;
       padding-right: 2%;
-      @media #{$small-only} {
-        max-width: 30%;
-      }
+
         img{
         max-height:100%;
         width:auto;
@@ -435,7 +432,7 @@ canvas.sketch {
     &.byAlbum ul,&.bySongs ul{
       overflow-y:scroll;
       transition:.5s height ease-in-out;
-      margin-bottom:40px;
+      margin-bottom:20px;
     }
     &.byAlbum ul {
       li {

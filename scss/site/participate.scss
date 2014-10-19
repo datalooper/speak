@@ -60,17 +60,19 @@
  	h2{
  		border-bottom:2px $medium-grey solid;
  		&.section{
- 			margin-top:40px;
+ 			margin-top:1em;
  		}
  	}
  	.header {
- 		margin-top:$top-bar-height;
  		background:url('../assets/img/participate-header.jpg');
  		background-size:cover;
  		h2{
  			font-size:5em;
  			padding:2% 0;
  			font-weight:bold;
+          @media #{$large-down} {
+            font-size:2em;
+          }
  		}	
  	}
  	a{

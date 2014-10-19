@@ -29,8 +29,8 @@ SpeakPlayer.Library = {
         console.log("sizing container");
         var playlistHeight = SpeakPlayer.Playlist.playlistContainer.hasClass('active') ? SpeakPlayer.Playlist.playlistContainer.outerHeight() : 0,
             playerHeight = SpeakPlayer.Player.playerContainer.is(':visible') ? SpeakPlayer.Player.playerContainer.outerHeight() : 0,
-            headerOffset = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').offset().top,
-            headerHeight = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').outerHeight(),
+            headerOffset = SpeakPlayer.Library.libraryContainer.find('#songContainer').offset().top ,
+            headerHeight = SpeakPlayer.Library.libraryContainer.find('#songContainer .header').is(':visible') ? SpeakPlayer.Library.libraryContainer.find('#songContainer .header').outerHeight() : 0,
             bottomMargin = parseInt(SpeakPlayer.Library.libraryContainer.find("#library").css('margin-bottom')),
             libHeight = $(window).height()-headerOffset-headerHeight-bottomMargin-playlistHeight-playerHeight;
             SpeakPlayer.Library.libraryContainer.find("#library").height(libHeight);

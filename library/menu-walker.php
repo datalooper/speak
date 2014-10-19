@@ -9,14 +9,13 @@ class top_bar_walker extends Walker_Nav_Menu {
         $element->has_children = !empty( $children_elements[$element->ID] );
         $element->classes[] = ( $element->current || $element->current_item_ancestor ) ? 'active' : '';
         $element->classes[] = ( $element->has_children && $max_depth !== 1 ) ? 'has-dropdown' : '';
-        
         parent::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
     }
     
     function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
         $item_html = '';
-        parent::start_el( $item_html, $object, $depth, $args ); 
-        
+        parent::start_el( $item_html, $object, $depth, $args );
+
         $output .= ( $depth == 0 ) ? '<li class="divider"></li>' : '';
         
         $classes = empty( $object->classes ) ? array() : (array) $object->classes;  
@@ -29,7 +28,7 @@ class top_bar_walker extends Walker_Nav_Menu {
     if ( in_array('divider', $classes) ) {
         $item_html = preg_replace( '/<a[^>]*>( .* )<\/a>/iU', '', $item_html );
     }
-        
+
         $output .= $item_html;
     }
     

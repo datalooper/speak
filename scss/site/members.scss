@@ -17,7 +17,10 @@
 	opacity:.7;
 }
 #content-container section.members{
-
+  background:$dark-grey;
+  ul{
+    margin:0;
+  }
 	
 	.user{
 		padding:0;
@@ -25,6 +28,7 @@
 		overflow: hidden;
 
 		&:hover, &.active{
+          overflow:visible;
 			.userInfo{
 				transform: translate3d(0,-100%, 0);
 			}
@@ -63,7 +67,7 @@
 			position:absolute;
 			background:$dark-grey;
 			width:100%;
-			padding:10px 5% 10px 10%;
+			padding:10px 5% 10px 10px;
 			transition: transform .3s ease-in-out;
 			
 			h2{
@@ -71,6 +75,7 @@
 				color:$light-grey;
 				font-weight:100;
 				line-height: 1;
+                max-width:80%;
 				margin:0;
 				.userNickname{	
 					color:$medium-grey;
@@ -105,14 +110,21 @@
 		}
 		.fullInfo{
 			max-height: 0;
+            width:100%;
+            position:absolute;
 			overflow: hidden;
-			padding:0px 5% 0px 10%;
+			padding:0px 5% 0px 10px;
+            z-index: 100;
 			background:$dark-grey;
 			transition: max-height .5s ease-in-out;
 			&.active{
 				max-height:200px;
 
 			}
+          .userBio{
+            color:$light-grey-alt;
+
+          }
 		}
 	}
 }

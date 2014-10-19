@@ -15,7 +15,6 @@ $(document).on('no-ajax-navigation', function () {
 body.on('click', '.top-bar-menu a', function () {
     $('.top-bar-menu li').removeClass('active');
     $(this).parent('li').addClass('active');
-
 });
 
 body.on('click','a[href="#"]', function(e){
@@ -28,7 +27,7 @@ $(document).ready(function () {
     checkPage();
     checkHome();
 
-    $(window).scroll(function () {
+    $('section.home').scroll(function () {
         if (pageName == "home") {
             checkScroll();
         }
@@ -43,6 +42,11 @@ body.on('click', '.userMore', function () {
     el.next('.userLess').show();
     userInfo.addClass('active');
     user.addClass('active');
+    setTimeout(function(){
+        $('section.members').animate({
+            scrollTop : user.offset().top
+        });
+    }, 500);
 });
 body.on('click', '.userLess', function () {
     var el = $(this);
@@ -104,13 +108,13 @@ function setupHome() {
 
 function checkScroll() {
     var circleCTAs =$('.circleCTAs img'),
-        scrollTop = screenWindow.scrollTop();
+        scrollTop = $('section.home').scrollTop();
     if (scrollTop > 300 && homeTopBarContainer.hasClass('transparent')) {
         homeTopBarContainer.removeClass('transparent');
         circleCTAs.removeClass('animated');
     } else if (scrollTop < 300 && !homeTopBarContainer.hasClass('transparent') ) {
         homeTopBarContainer.addClass('transparent');
-    } else if(scrollTop > 400 && scrollTop < 1300 && circleCTAs.hasClass('animated')){
+    } else if(scrollTop > 600 && scrollTop < 1300 && circleCTAs.hasClass('animated')){
         circleCTAs.removeClass('animated');
     }
 }

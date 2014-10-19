@@ -6,6 +6,7 @@ SpeakPlayer.Playlist = {
     playlistContainer: "",
     SMALL_SCREEN_WIDTH: 640,
     customScrollBar : '',
+    hidePlaylistHelper : '',
     render: function (playlistContainer) {
         this.playlistContainer = playlistContainer;
         var html = "<ul class='cf' id='playlistUl'></ul>";
@@ -38,21 +39,28 @@ SpeakPlayer.Playlist = {
     },
     addToPlaylist: function (song, playOrder) {
         //display playlist object on screen
-        SpeakPlayer.Player.playerContainer.show();
         var playerUl = this.playlistContainer.find('ul'),
             htmlPlaying = "<li data-song-id='" + song.id + "' class='playing current song'>",
             htmlNoPlay = "<li data-song-id='" + song.id + "' class='song'>",
-            librarySong = SpeakPlayer.Library.libraryContainer.find('[data-song-id=' + song.id + ']');
+            librarySong = SpeakPlayer.Library.libraryContainer.find('[data-song-id=' + song.id + ']'),
 
-        var html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
-            "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + playSVG + "</a><a href='#' class='pause'>" + pauseSVG + "</a></div><a href='#' class='remove'></li>";
+            html = "<img src='" + song.albumArtUrl + "'/><div class='songInfo'><p class='songName'>" + song.songName +
+            "</p><p class='artistName'>" + song.artistName + "</p></div><div class='playOverlay'><a href='#' class='play'>" + SpeakPlayer.Player.svgs.playSVG + "</a><a href='#' class='pause'>" + SpeakPlayer.Player.svgs.pauseSVG + "</a></div><a href='#' class='remove'></li>";
+        SpeakPlayer.Player.playerContainer.show();
+        SpeakPlayer.Player.controls.playlistHelper.html(SpeakPlayer.Playlist.playlist.length+1).show();
+        if(this.hidePlaylistHelper != ''){
+            clearTimeout(this.hidePlaylistHelper);
+        }
+        this.hidePlaylistHelper = setTimeout(function(){
+            SpeakPlayer.Player.controls.playlistHelper.fadeOut();
+        }, 1000);
+
         if (this.playlistContainer.find('[data-song-id=' + song.id + ']').length > 0) {
             return false;
         } else if (jQuery.isEmptyObject(SpeakPlayer.Playlist.playlist) || playOrder == SpeakPlayer.Player.PLAY_NOW) {
             playerUl.prepend(htmlPlaying + html);
             SpeakPlayer.Player.changeSong(song);
             SpeakPlayer.Library.libraryContainer.addClass('playing');
-            SpeakPlayer.Playlist.playlistContainer.addClass('active');
             SpeakPlayer.Library.sizeLibraryContainer();
             playerUl.sortable().disableSelection();
         } else if (playOrder == SpeakPlayer.Player.ADD_TO_PLAYLIST) {

@@ -3,22 +3,17 @@
  * ----------------------------------------------------------------------------
  */
 
-body.home{
-#content-container>section.home{
-	max-height:5000px;
-	transition:max-height .5s ease-in-out;
-	transition-delay: .5s;
-	}
- }
- .home{
+body.home {
+  #content-container {
+    transform: translate3d(0, 0, 0);
+    & > section.home {
+      max-height: 5000px;
+      transition: max-height .5s ease-in-out;
+      transition-delay: .5s;
+    }
 
-	#content-container{
-	 	transform: translate3d(0, 0, 0);
-	}
-
- 	
+  }
 }
-
 #content-container>section.home{
  	 	background:$very-light-grey;
 
@@ -28,7 +23,7 @@ body.home{
  		margin: auto;
  	}
  	.section{
- 		margin-top:30px;
+ 		margin-top:15px;
  	}
     h1{ text-align:center; }
  	@media #{$small-only} { 
@@ -77,8 +72,13 @@ body.home{
  				line-height:40px;
  				margin-bottom:5%;
  			}
+          .button{
+            max-width: 150px;
+            margin:0 auto;
 
- 		}
+          }
+
+          }
  		@media #{$large-only} { 
  			.homeCircle{
  				width:30%;
@@ -129,8 +129,10 @@ body.home{
 			 	 		line-height: 20px;
 			 	 	}
 			 	 	.button{
-			 	 		font-size:18px;
-			 	 		padding:15px;
+			 	 		font-size:14px;
+			 	 		padding:10px;
+                      font-weight:100;
+                      letter-spacing: 1px;
 			 	 	}
 			 	 }
 			 	}
@@ -160,17 +162,17 @@ body.home{
 
 			 	p.description{
 			 		text-align: center;
-			 	}
+                    margin:0 5%;
+
+                }
 			 	.chimpy_lite_custom_css{
 			 		max-height:0;
 			 		-webkit-border-radius: 5px;
 			 		-moz-border-radius: 5px;
 			 		border-radius: 5px;
 			 		overflow: hidden;
-			 		margin: 40px 0px;
 			 		@include transition(all, 0.5s, ease-in-out);
 			 		background:$light-grey;
-			 		overflow: hidden;
 			 		@media #{$medium-down} {
 			 			-webkit-border-radius: 0px;
 			 			-moz-border-radius: 0px;
@@ -179,7 +181,9 @@ body.home{
 
 			 		&.active{
 			 			max-height:600px;
-			 		}
+                      margin: 40px 0px;
+
+                    }
 			 		.exitForm{
 			 			display: inline-block;
 			 			float:right;
@@ -206,17 +210,16 @@ body.home{
 			 		display:inline-block;
 			 		list-style-type: none;
 			 		padding:0% 0% 0% 2%;
-			 		height:114px;
 			 		box-sizing:content-box;
-			 		width:114px;
+			 		max-width:20%;
 
 			 	}
 			 	img{ 
-			 		height: 100%; 
+			 		max-height: 100%;
 			 		@include transition(all, 0.5s, ease-in-out);
 			 	}
 			 	img.animated{
-			 		height: 0%;
+			 		//height: 0%;
 
 			 	}
 			 	li:first-child{
@@ -236,7 +239,6 @@ body.home{
 			 		width:auto;
 			 		display:inline-block;
 			 		margin:0;
-			 		min-width: 410px;
 
 			 		li{
 			 			display:inline-block;
@@ -246,7 +248,13 @@ body.home{
 			 		}
 			 		@media #{$small-only} { 
 			 			li{
+
 			 				margin:0px 10px;
+                            a{font-size:14px;}
+                          .underline{
+                            height:1px;
+
+                          }
 			 			}
 			 		}
 			 		a{
@@ -267,27 +275,28 @@ body.home{
 			 	}
 
 			 	ul.equipment-type{
-			 		margin-top:35px;
 			 		display:none;
-			 		&.selected{
+                    list-style-type: circle;
+                    margin:10px auto;
+                    max-width:80%;
+
+                  &.selected{
 			 			display:block;
 			 		}
 			 		li{
 			 			text-align:left;
-			 			list-style-type: none;
-			 			margin: 10px 0;
-			 			border:1px solid $medium-grey;
+			 			float:left;
+                        padding:0 10px;
 			 			p{
-			 				margin:0 10px;
+			 				margin:0px;
+
 			 			}
 			 			p.title{
 			 				margin-top:10px;
 			 				color:$blue;
 			 				font-size:20px;
-			 				text-transform: uppercase;
 			 			}
 			 			p.description{
-			 				margin-bottom:10px;
 			 				font-size:16px;
 			 				color:$medium-grey;
 			 				font-family: $serif;
@@ -377,17 +386,36 @@ body.home{
 			z-index:0;
 		}
 		
-		@media #{$medium-down} { 
+		@media #{$medium-down} {
+          padding-bottom:30px;
 			.footerOverlay{
-				width:80%;
+				width:100%;
 				height:180px;
-				margin-left:-40%;
+                padding:0 10px;
+				margin-left:-50%;
+                margin-top:10px;
+              .social-container{
+                width:100%;
+                margin:0 auto;
+                text-align: center;
+              }
 			}
 			h1{
-				font-size:40px;
+				font-size:30px;
 				text-shadow: 1px 1px 2px rgba(45, 45, 45, 1);
 			}
 
 		}
 	}
+      @media #{$small-only} {
+        h1 {
+          font-size: 20px;
+          margin:0 2% 10px;
+        }
+        p.description {
+          padding:0 10px;
+          font-size: 14px;
+        }
+
+      }
 }

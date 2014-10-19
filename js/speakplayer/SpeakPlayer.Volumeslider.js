@@ -8,8 +8,8 @@ SpeakPlayer.Volumeslider = {
 init : function(){
             this.volumeSlider = SpeakPlayer.Player.controls.volumeSlider;
             this.volumeSlider.on('slide', function (event, ui) {
-                if (audio != null) {
-                    audio.volume = ui.value / 100;
+                if (SpeakPlayer.Player.audioElement != null) {
+                    SpeakPlayer.Player.audioElement.volume = ui.value / 100;
                 }
             });
         }

@@ -4,23 +4,30 @@
 SpeakPlayer.Seekbar = {
     value : 0,
     audio_clock : '',
+    seekBar : '',
     init : function(){
-        seekBar = SpeakPlayer.Player.controls.seekBar;
-        //stops seeking when use begins drag
-        seekBar.on("slidestart", function () {
-            clearInterval(audio_clock);
+        this.seekBar = SpeakPlayer.Player.controls.seekBar.slider({
+            range: "min",
+            value: 0,
+            min: 1
         });
-        seekBar.on("slidechange", function (event, ui) {
+        //stops seeking when use begins drag
+        this.seekBar.on("slidestart", function () {
+            console.log("slidestart");
+            SpeakPlayer.Seekbar.pauseSeeking();
+
+        });
+        this.seekBar.on("slidechange", function (event, ui) {
             //track time change on seekbar
             SpeakPlayer.Player.controls.startTime.html(SpeakPlayer.Seekbar.secondsToTime(ui.value / 10));
         });
         //resumes seeking when user ends drag
-        seekBar.on("slidestop", function (event, ui) {
+        this.seekBar.on("slidestop", function (event, ui) {
 
-            this.value = seekBar.slider("value") || 0;
-            SpeakPlayer.Player.audioElement.currentTime = value / 10;
-            if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying) {
-                this.audio_clock = SpeakPlayer.Seekbar.startSeeking();
+            SpeakPlayer.Seekbar.value = SpeakPlayer.Seekbar.seekBar.slider("value") || 0;
+            SpeakPlayer.Player.audioElement.currentTime = SpeakPlayer.Seekbar.value / 10;
+            if (SpeakPlayer.Player.getCurrentlyPlayingSong().isPlaying && SpeakPlayer.Seekbar.audio_clock == '') {
+                SpeakPlayer.Seekbar.startSeeking();
             }
         });
     },
@@ -37,10 +44,21 @@ SpeakPlayer.Seekbar = {
     //begins seeking. We avoid using the player callbacks, because they only execute every 250ms,
     //making the seekBar seem grainy.
     startSeeking : function() {
-        return setInterval(function () {
-            this.value += 1;
-            SpeakPlayer.Player.controls.seekBar.slider("value", value);
+        this.audio_clock = setInterval(SpeakPlayer.Seekbar.seekCounter, 100);
+        return this.audio_clock;
+    },
+    pauseSeeking : function(){
+        clearInterval(this.audio_clock);
+        this.audio_clock = '';
+    },
+    stopSeeking : function(){
+        console.log("stopping seek");
+        this.pauseSeeking();
+        this.value = 0;
+    },
+    seekCounter : function(){
+        SpeakPlayer.Seekbar.value += 1;
+        SpeakPlayer.Seekbar.seekBar.slider("value", SpeakPlayer.Seekbar.value);
 
-        }, 100);
     }
 }
