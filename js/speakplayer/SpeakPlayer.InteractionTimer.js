@@ -2,26 +2,27 @@
  * Created by vcimo5 on 9/30/14.
  */
 SpeakPlayer.InteractionTimer = {
+    interactionTimer : '',
     start: function () {
+        if(!is_touch_device()) {
 
-        var interactionTimer = setTimeout(function () {
-            onNoInteraction();
-        }, 5000);
+            SpeakPlayer.Library.libraryContainer.hover(function () {
+                    console.log("clearing timer");
 
-        SpeakPlayer.player.libraryContainer.hover(function () {
-                $('canvas.sketch').removeClass('opaque');
+                    SpeakPlayer.Player.lowerVisualizerOpacity();
+                },
+                function () {
+                    console.log("setting timer");
 
-                SpeakPlayer.player.libraryContainer.removeClass('transparent');
-                clearTimeout(interactionTimer);
-            },
-            function () {
-                interactionTimer = setTimeout(function () {
-                    onNoInteraction();
-                }, 5000);
-            });
+                    SpeakPlayer.InteractionTimer.interactionTimer = setTimeout(function () {
+                        SpeakPlayer.InteractionTimer.onNoInteraction();
+                    }, 5000);
+                });
+        }
     },
+
     onNoInteraction: function () {
         $('canvas.sketch').addClass('opaque');
-        SpeakPlayer.player.libraryContainer.addClass('transparent');
+        SpeakPlayer.Library.libraryContainer.addClass('transparent');
     }
 }

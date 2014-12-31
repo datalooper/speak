@@ -6,7 +6,7 @@ if($pageslug == "members"){
   	//do stuff ?>
   <a class="docTitle" data-doctitle="<?php echo wp_title( ' | ', 'false', 'right' ); bloginfo( 'name' ); ?>"></a>
   
-	<ul class="small-block-grid-1 large-block-grid-2 xlarge-block-grid-4">
+	<ul class="small-block-grid-1 large-block-grid-3 xlarge-block-grid-4">
 		
   	<?php   	
   	foreach(get_users() as $user){

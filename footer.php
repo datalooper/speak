@@ -1,6 +1,5 @@
 
 
-<a class="exit-off-canvas"></a>
 
 <?php do_action('foundationPress_layout_end'); ?>
 </div>

@@ -5,6 +5,11 @@ jQuery(document).ready(function ($) {
 
 });
 
+function is_touch_device() {
+    return 'ontouchstart' in window // works on most browsers
+    || 'onmsgesturechange' in window; // works on ie10
+};
+
 SpeakPlayer = {
     isInitialized : "false",
     init: function (libraryContainer, playerContainer, playlistContainer) {
@@ -12,6 +17,7 @@ SpeakPlayer = {
         if (this.isInitialized == "false" && libraryContainer.length > 0) {
             var ajaxLoaderEl = $('body').find('#ajaxLoader');
             var loader = setInterval(function(){
+                console.log("Attempting load complete, height:" + libraryContainer.height());
                 if(libraryContainer.height() > 0) {
                     ajaxLoaderEl.fadeOut();
                     clearInterval(loader);
@@ -20,12 +26,15 @@ SpeakPlayer = {
             //just in case
             setTimeout(function(){
                 clearInterval(loader);
-            },3000);
+            },8000);
             this.Library.render(libraryContainer);
             this.Playlist.render(playlistContainer);
             this.isInitialized = "true";
             this.Player.render(playerContainer);		//only want to call once
-            //this.Visualizer.initVisualizer();
+            if(!is_touch_device()) {
+                initVisualizer();
+                SpeakPlayer.InteractionTimer.start();
+            }
 
         }
     }

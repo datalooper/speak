@@ -11,6 +11,9 @@
 	<section class="page home">
 		<?php get_template_part('home-page'); ?>
 	</section>
+     <section class="page about">
+         <?php get_template_part('about-page'); ?>
+     </section>
 	<section class="page members">
 		<?php get_template_part('members-page'); ?>
 	</section>

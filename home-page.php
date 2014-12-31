@@ -67,7 +67,7 @@ $other = get_posts($args);
 
 	<div id="section-2" class="mission section narrow">
 		<h1 class="green-blue">Empowering Musicians to Create</h1>
-		<p class="description">Recordings have the power to turn a fleeting idea into a concrete message with emotional impact. Speak Studios empowers musicians to learn the art of recording and come together in a collaborative environment to share their experiences and talents.</p>
+		<p class="description">Speak Studios empowers musicians to turn a fleeting idea into a work of art. Our studio is co-operatively run by a group of creative individuals who have a passion for music and recording. We hope you enjoy our creations.</p>
 
 			<ul class="circleCTAs cf">
 				<li><a data-section="music" href="<?php echo get_permalink( get_page_by_title( 'music' ) );?>"><img src="<?php echo get_template_directory_uri(); ?>/assets/img/home-listen.png" alt="listen to music"/></li>
@@ -91,42 +91,42 @@ $other = get_posts($args);
 
 		<div id="section-4" class="section equipment ">
 			<h1 class="green">The Goods</h1>
-
-			<ul class="headers">
-				<li class="selected"><a href="#microphones">Microphones</a></li>
-				<li><a href="#preamps">Pre-Amps</a></li>
-				<li><a href="#instruments">Instruments</a></li>
-				<li><a href="#other">Other</a></li>
-				<div class="underline"></div>
-
-			</ul>
-			<ul id="microphones" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 selected equipment-type">
-				<?php foreach($microphones as $microphone){ ?>
-				<li>
-					<p class="title"><?php echo $microphone->post_title; ?></p>
-				</li>
-				<?php }?>
-			</ul>
-			<ul id="preamps" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 equipment-type ">
-				<?php foreach($preamps as $preamp){ ?>
-				<li>
-					<p class="title"><?php echo $preamp->post_title; ?></p>
-				</li>
-				<?php }?>  </ul>
-				<ul id="instruments" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 equipment-type ">
-					<?php foreach($instruments as $instrument){ ?>
-					<li>
-						<p class="title"><?php echo $instrument->post_title; ?></p>
-					</li>
-					<?php }?> 
-				</ul>
-				<ul id="other" class="small-block-grid-1 large-block-grid-3 equipment-type ">
-					<?php foreach($other as $piece){ ?>
-					<li>
-						<p class="title"><?php echo $piece->post_title; ?></p>
-					</li>
-					<?php }?> 
-				</ul>	
+            <?php echo get_post_field('post_content', 3201); ?>
+<!--			<ul class="headers">-->
+<!--				<li class="selected"><a href="#microphones">Microphones</a></li>-->
+<!--				<li><a href="#preamps">Pre-Amps</a></li>-->
+<!--				<li><a href="#instruments">Instruments</a></li>-->
+<!--				<li><a href="#other">Other</a></li>-->
+<!--				<div class="underline"></div>-->
+<!---->
+<!--			</ul>-->
+<!--			<ul id="microphones" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 selected equipment-type">-->
+<!--				--><?php //foreach($microphones as $microphone){ ?>
+<!--				<li>-->
+<!--					<p class="title">--><?php //echo $microphone->post_title; ?><!--</p>-->
+<!--				</li>-->
+<!--				--><?php //}?>
+<!--			</ul>-->
+<!--			<ul id="preamps" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 equipment-type ">-->
+<!--				--><?php //foreach($preamps as $preamp){ ?>
+<!--				<li>-->
+<!--					<p class="title">--><?php //echo $preamp->post_title; ?><!--</p>-->
+<!--				</li>-->
+<!--				--><?php //}?><!--  </ul>-->
+<!--				<ul id="instruments" class="small-block-grid-1 medium-block-grid-2 large-block-grid-3 equipment-type ">-->
+<!--					--><?php //foreach($instruments as $instrument){ ?>
+<!--					<li>-->
+<!--						<p class="title">--><?php //echo $instrument->post_title; ?><!--</p>-->
+<!--					</li>-->
+<!--					--><?php //}?><!-- -->
+<!--				</ul>-->
+<!--				<ul id="other" class="small-block-grid-1 large-block-grid-3 equipment-type ">-->
+<!--					--><?php //foreach($other as $piece){ ?>
+<!--					<li>-->
+<!--						<p class="title">--><?php //echo $piece->post_title; ?><!--</p>-->
+<!--					</li>-->
+<!--					--><?php //}?><!-- -->
+<!--				</ul>	-->
 			</div> 
 			<div id="home-footer" >
 				<div class="footerOverlay">

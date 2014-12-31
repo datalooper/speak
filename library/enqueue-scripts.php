@@ -17,6 +17,8 @@ if (!function_exists('FoundationPress_scripts')) :
         wp_register_script( 'handlebars', get_template_directory_uri() . '/js/handlebars.runtime-v2.0.0.js', array('jquery'), '1.0.0', true );
         wp_register_script( 'handlebars-templates', get_template_directory_uri() . '/js/templates.js', array('jquery'), '1.0.0', true );
         wp_register_script( 'list', get_template_directory_uri() . '/js/list.min.js', array('jquery'), '1.0.0', true );
+        wp_register_script( 'touchpunch', get_template_directory_uri() . '/js/jquery.ui.touch-punch.min.js', array('jquery'), '1.0.0', true );
+
 
         // enqueue scripts
         wp_enqueue_script('modernizr');
@@ -30,6 +32,7 @@ if (!function_exists('FoundationPress_scripts')) :
         wp_enqueue_script('handlebars');
         wp_enqueue_script('handlebars-templates');
         wp_enqueue_script('list');
+        wp_enqueue_script('touchpunch');
 
         wp_enqueue_script('transit');
         wp_enqueue_script('foundation');

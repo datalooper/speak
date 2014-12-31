@@ -4,7 +4,7 @@
  if($pageslug == "participate"){ ?>
 
  <a class="docTitle" data-doctitle="<?php echo wp_title( ' | ', 'false', 'right' ); bloginfo( 'name' ); ?>"></a>
- <div class="header"><h2><?php echo get_the_excerpt(); ?></h2></div>
+ <div class="header"><h2>join Speak Studios. </h2><h3>learn, collaborate, record.</h3></div>
 
  <div class="row">
  	<div class="large-6 columns">

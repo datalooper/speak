@@ -33,6 +33,11 @@ SpeakPlayer.Playlist = {
         this.playlist = jQuery.grep(this.playlist, function (value) {
             return value != song;
         });
+        if(this.playlist.length == 0){
+            this.hidePlaylist();
+            SpeakPlayer.Player.playerContainer.hide();
+            SpeakPlayer.Library.sizeLibraryContainer();
+        }
         SpeakPlayer.Playlist.playlistContainer.find('[data-song-id=' + song.id+']').remove();
         SpeakPlayer.Library.libraryContainer.find('[data-song-id=' + song.id+']').removeClass('current playing inPlaylist');
 
@@ -76,6 +81,9 @@ SpeakPlayer.Playlist = {
         if($('window').width() > this.SMALL_SCREEN_WIDTH && this.customScrollBar == '') {
             this.setupScrollSlider();
         }
+    },
+    hidePlaylist : function(){
+        this.playlistContainer.removeClass('active');
     },
 
     setupScrollSlider: function () {

@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.3.7/slick.css"/>
     <link rel="stylesheet" type="text/css" href="<?php echo get_template_directory_uri(); ?>/css/jquery.mCustomScrollbar.css"/>
-
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400' rel='stylesheet' type='text/css'>
     <?php wp_head(); ?>
 
     
@@ -45,7 +45,9 @@
     <?php get_template_part('nav'); ?>
   </div>
   <div class="inner-wrap">
-    <nav class="tab-bar show-for-small-only">
+      <a class="exit-off-canvas"></a>
+
+      <nav class="tab-bar show-for-small-only" data-topbar>
     <section class="left-small">
       <a class="left-off-canvas-toggle menu-icon" ><span></span></a>
     </section>

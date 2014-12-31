@@ -1,8 +1,9 @@
 
 <?php get_header(); ?>
 
-<div class="row page-container">
-	<div class="small-12 large-8 columns" role="main">
+<div class="page-container">
+    <div class="row">
+	<div class="small-12 large-12 columns" role="main">
 
 	<?php do_action('foundationPress_before_content'); ?>
 
@@ -24,7 +25,7 @@
 	<?php endwhile;?>
 
 	<?php do_action('foundationPress_after_content'); ?>
-
+    </div>
 	</div>
 </div>
 <?php get_footer(); ?>

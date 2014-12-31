@@ -3,11 +3,12 @@ add_import_path "bower_components/foundation/scss"
 
 # Set this to the root of your project when deployed:
 http_path = "/"
-css_dir = "stylesheets"
+css_dir = "css"
 sass_dir = "scss"
 images_dir = "images"
 javascripts_dir = "js"
-sass_options = { :debug_info => true }
+
+sass_options = { :debug_info => true,  :sourcemap => true}
 # You can select your preferred output style here (can be overridden via the command line):
 # output_style = :expanded or :nested or :compact or :compressed
 
@@ -23,3 +24,5 @@ sass_options = { :debug_info => true }
 # preferred_syntax = :sass
 # and then run:
 # sass-convert -R --from scss --to sass sass scss && rm -rf sass && mv scss sass
+
+preferred_syntax = :scss

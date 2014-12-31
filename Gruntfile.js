@@ -12,12 +12,12 @@ module.exports = function(grunt) {
       },
       dist: {
         options: {
-          outputStyle: 'compressed',
-          sourceMap: false
+          outputStyle: 'expanded',
+          sourceMap: true
         },
         files: {
           'css/app.css': 'scss/app.scss'
-        }        
+        }
       }
     },
 
@@ -51,12 +51,14 @@ module.exports = function(grunt) {
       },
       dist: {
         src: [
-        'js/foundation/js/foundation.min.js',
+        'js/foundation/js/foundation.js',
         'js/init-foundation.js',
         'js/speakplayer/SpeakPlayer.js',
             'js/speakplayer/SpeakPlayer.Song.js',
             'js/speakplayer/SpeakPlayer.Seekbar.js',
+            'js/speakplayer/SpeakPlayer.InteractionTimer.js',
             'js/speakplayer/SpeakPlayer.Library.js',
+            'js/speakplayer/SpeakPlayer.Visualizer.js',
             'js/speakplayer/SpeakPlayer.Volumeslider.js',
             'js/speakplayer/SpeakPlayer.Playlist.js',
             'js/speakplayer/SpeakPlayer.Player.js',
@@ -79,7 +81,7 @@ module.exports = function(grunt) {
       sass: {
         files: 'scss/**/*.scss',
         tasks: ['sass']
-        
+
       },
     shell: {
         files : 'js/speakplayer/templates/*.*',
@@ -96,7 +98,7 @@ module.exports = function(grunt) {
         tasks: 'compileJS',
         options: {
           spawn: false,
-        },
+        }
       }
     }
   });

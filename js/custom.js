@@ -58,6 +58,15 @@ body.on('click', '.userLess', function () {
     user.removeClass('active');
 });
 
+//for some reason, needed to add this in as nav menu was not working.
+$('a.left-off-canvas-toggle, .left-off-canvas-menu , a.exit-off-canvas').on('click',function(){
+    $('.off-canvas-wrap').toggleClass('move-right');
+});
+
+
+
+
+
 function checkPage() {
 
     var activeNav = $('.top-bar-menu li.active a'), slinky = $('#slinky');
@@ -82,12 +91,17 @@ function checkPage() {
         }, 800);
     }
 
-    //animates slinky
+    if(pageName != "music"){
+        SpeakPlayer.Player.lowerVisualizerOpacity();
+    }
 
-    slinky.css({
-        'width': activeNav.width(),
-        'left': activeNav.position().left
-    });
+    //animates slinky
+    if(activeNav.length > 0) {
+        slinky.css({
+            'width': activeNav.width(),
+            'left': activeNav.position().left
+        });
+    }
 
     return pageName;
 }
@@ -135,8 +149,8 @@ function hideShowMailingForm() {
     } else {
         signupForm.addClass("active");
         setTimeout(function () {
-            $('html, body').animate({
-                scrollTop: $('.circleCTAs').offset().top
+            $('section.home').animate({
+                scrollTop:  $('section.home').scrollTop() + $('.circleCTAs').offset().top
             }, 500);
         }, 500);
 
@@ -145,7 +159,7 @@ function hideShowMailingForm() {
 function setupHomeCarousel() {
     $('.homeCarousel').slick({
         infinite: true,
-        speed: 300,
+        speed: 500,
         slidesToShow: 3,
         touchMove: false,
         slidesToScroll: 1,

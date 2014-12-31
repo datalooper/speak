@@ -56,14 +56,16 @@ SpeakPlayer.Player = {
         this.setListeners();
         this.bindPlayer();
         //setup tooltips
-        $( document ).tooltip({
-            extraClass: "speakTooltip",
-            position: {
-                my: "center bottom",
-                at: "center top"
+        if(!'ontouchstart' in document.documentElement) {
+            $(document).tooltip({
+                extraClass: "speakTooltip",
+                position: {
+                    my: "center bottom",
+                    at: "center top"
 
-            }
-        });
+                }
+            });
+        }
         SpeakPlayer.Seekbar.init();
         SpeakPlayer.Volumeslider.init();
 
@@ -292,6 +294,14 @@ SpeakPlayer.Player = {
                 SpeakPlayer.Library.libraryContainer.find('.clearFilter').removeClass('hide');
             }
         });
+
+        SpeakPlayer.Library.libraryContainer.on("focus", ".header.filter input", function(){
+
+                if($(window).width() <= 640) {
+                    SpeakPlayer.Player.playerContainer.hide();
+                    SpeakPlayer.Library.sizeLibraryContainer();
+                }
+        });
         SpeakPlayer.Library.libraryContainer.on("click",".clearFilter", function(){
             $(this).addClass('hide');
             SpeakPlayer.Library.libraryContainer.find('.search').val('');
@@ -348,7 +358,7 @@ SpeakPlayer.Player = {
     setListeners: function () {
         if (this.audioElement) {
             //waits until metadata is loaded to scale seekBar to track duration
-            this.audioElement.addEventListener('loadedmetadata', function () {
+            this.audioElement.addEventListener('canplay', function () {
                 SpeakPlayer.Seekbar.seekBar.slider("option", "max", SpeakPlayer.Player.audioElement.duration * 10);
                 value = 0;
                 if (typeof(SpeakPlayer.Seekbar.audio_clock) === "undefined" || SpeakPlayer.Seekbar.audio_clock == '') {
@@ -484,6 +494,14 @@ SpeakPlayer.Player = {
             this.changeSong(prevSong);
         }
     },
+    lowerVisualizerOpacity : function(){
+            $('canvas.sketch').removeClass('opaque');
+            if (SpeakPlayer.Library.libraryContainer.length > 0) {
+                SpeakPlayer.Library.libraryContainer.removeClass('transparent');
+                clearTimeout(SpeakPlayer.InteractionTimer.interactionTimer);
+            }
+
+    },
     //begins playing specified song and removes current song.
     changeSong: function (song) {
 
@@ -495,10 +513,18 @@ SpeakPlayer.Player = {
         SpeakPlayer.Seekbar.stopSeeking();
         //instantiate new audio element
         this.audioElement = new Audio(song.songUrl);
-        this.audioElement.addEventListener("loadedmetadata", function (_event) {
-            var duration = SpeakPlayer.Player.audioElement.duration;
-            //SpeakPlayer.Visualizer.initAnalyzer(audio);
-            SpeakPlayer.Player.controls.endTime.html(SpeakPlayer.Seekbar.secondsToTime(duration));
+        this.audioElement.volume = this.controls.volumeSlider.slider("value")/100;
+        this.audioElement.addEventListener("canplay", function (_event) {
+            if(SpeakPlayer.Player.audioElement != null) {
+                this.play();
+
+                if (!is_touch_device()) {
+                    initAnalyzer(this);
+                }
+                SpeakPlayer.Player.controls.endTime.html(SpeakPlayer.Seekbar.secondsToTime(this.duration));
+            } else{
+                console.log("audioElement null");
+            }
         });
         //resets playing flag on previously playing song in playlist array.
         if (SpeakPlayer.Player.getCurrentlyPlayingSong()) {
@@ -506,7 +532,13 @@ SpeakPlayer.Player = {
             SpeakPlayer.Player.getCurrentlyPlayingSong().isLoaded = false;
         }
         //adds playing class to library and playlist items
+
         $('.song').removeClass('playing current');
+
+        $.each(SpeakPlayer.Library.list.items,function(index, el){
+            $(el.elm).removeClass("playing current");
+        });
+
         $('.song[data-song-id=' + song.id + ']').each(function () {
             $(this).addClass('playing current');
         });
@@ -516,7 +548,6 @@ SpeakPlayer.Player = {
         /****************/
         this.audioElement.pause();
         this.audioElement.load(); //suspends and restores all audio element
-        this.audioElement.play();
 
         //sets up seekbar and song ended listeners. only called once since seekbar is single instance
         this.setListeners();
